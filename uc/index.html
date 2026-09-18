@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投資配息紀錄－UC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4EE;
+    --paper-alt:#EFEBDD;
+    --ink:#232320;
+    --ink-muted:#726F63;
+    --ink-faint:#9A9585;
+    --navy:#2B3F4F;
+    --navy-soft:#3F5A6E;
+    --navy-wash:#E7ECEE;
+    --green:#3F6B4A;
+    --green-wash:#E6EEE7;
+    --red:#A6432E;
+    --red-wash:#F3E7E2;
+    --hairline:#DAD5C8;
+    --hairline-strong:#C3BCA9;
+    --font-serif:'Source Serif 4', Georgia, serif;
+    --font-sans:'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    font-size:14px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .shell{display:flex;min-height:100vh;}
+
+  .sidebar{
+    width:196px;
+    flex-shrink:0;
+    background:var(--navy);
+    color:#EDEEE9;
+    padding:28px 0;
+    display:flex;
+    flex-direction:column;
+  }
+  .brand{
+    font-family:var(--font-serif);
+    font-size:17px;
+    font-weight:600;
+    padding:0 22px 22px 22px;
+    border-bottom:1px solid rgba(255,255,255,.14);
+    margin-bottom:14px;
+    letter-spacing:.2px;
+  }
+  .brand small{
+    display:block;
+    font-family:var(--font-sans);
+    font-size:11px;
+    font-weight:400;
+    color:rgba(255,255,255,.55);
+    margin-top:4px;
+  }
+  .nav-item{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    color:rgba(237,238,233,.72);
+    font-family:var(--font-sans);
+    font-size:13.5px;
+    padding:10px 22px;
+    cursor:pointer;
+    border-left:2px solid transparent;
+    transition:background .12s, color .12s;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-item.active{
+    background:rgba(255,255,255,.09);
+    color:#fff;
+    border-left:2px solid #C9A24B;
+  }
+
+  .main{flex:1;min-width:0;padding:34px 42px 60px 42px;max-width:1240px;}
+  .page-header{margin-bottom:26px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .page-title{font-family:var(--font-serif);font-size:23px;font-weight:600;margin:0 0 4px 0;}
+  .page-sub{color:var(--ink-muted);font-size:12.5px;margin:0;}
+
+  select, input[type=text], input[type=number], input[type=date]{
+    font-family:var(--font-sans);
+    font-size:13px;
+    padding:7px 9px;
+    border:1px solid var(--hairline-strong);
+    border-radius:3px;
+    background:#fff;
+    color:var(--ink);
+  }
+  select:focus, input:focus{outline:2px solid var(--navy-soft);outline-offset:0;}
+  label{font-size:11.5px;color:var(--ink-muted);display:block;margin-bottom:4px;}
+  .field{display:flex;flex-direction:column;min-width:110px;}
+
+  button{font-family:var(--font-sans);cursor:pointer;}
+  .btn{
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:500;
+    border-radius:3px;
+  }
+  .btn:hover{background:var(--navy-soft);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--navy);
+    border:1px solid var(--hairline-strong);
+    padding:7px 14px;
+    font-size:12.5px;
+    border-radius:3px;
+  }
+  .btn-ghost:hover{background:var(--paper-alt);}
+  .btn-text{
+    background:none;border:none;color:var(--navy-soft);font-size:12px;padding:2px 4px;text-decoration:underline;
+  }
+  .btn-text.danger{color:var(--red);}
+
+  .panel{
+    background:#fff;
+    border:1px solid var(--hairline);
+    border-radius:4px;
+    padding:20px 22px;
+    margin-bottom:22px;
+  }
+  .panel-title{
+    font-family:var(--font-serif);
+    font-size:15.5px;
+    font-weight:600;
+    margin:0 0 14px 0;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .form-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:4px;}
+  .form-actions{display:flex;gap:8px;margin-top:12px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:left;
+    font-weight:500;
+    color:var(--ink-muted);
+    font-size:11.5px;
+    padding:0 10px 8px 10px;
+    border-bottom:1px solid var(--hairline-strong);
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:9px 10px;
+    border-bottom:1px solid var(--hairline);
+    vertical-align:middle;
+  }
+  tbody tr:hover{background:var(--paper-alt);}
+  .num{font-family:var(--font-mono);text-align:right;white-space:nowrap;}
+  .mono{font-family:var(--font-mono);}
+  th.num{text-align:right;}
+  .pos{color:var(--green);}
+  .neg{color:var(--red);}
+  .muted{color:var(--ink-muted);}
+  .tag{
+    display:inline-block;
+    font-size:11px;
+    padding:2px 8px;
+    border-radius:10px;
+    background:var(--navy-wash);
+    color:var(--navy);
+  }
+  .tag.locked{background:var(--red-wash);color:var(--red);}
+  .tag.unlocked{background:var(--green-wash);color:var(--green);}
+
+  .empty{
+    text-align:center;
+    color:var(--ink-faint);
+    padding:26px 10px;
+    font-size:13px;
+  }
+
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border:1px solid var(--hairline);border-radius:4px;overflow:hidden;margin-bottom:22px;}
+  .summary-cell{padding:14px 16px;border-right:1px solid var(--hairline);background:#fff;}
+  .summary-cell:last-child{border-right:none;}
+  .summary-label{font-size:11px;color:var(--ink-muted);margin-bottom:5px;}
+  .summary-value{font-family:var(--font-mono);font-size:17px;font-weight:600;}
+
+  .fx-panel{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;}
+  .fx-item{display:flex;flex-direction:column;gap:4px;}
+  .fx-item label{font-size:11px;color:var(--ink-muted);margin:0;}
+  .fx-item input{width:110px;}
+
+  .product-block{margin-bottom:30px;}
+  .product-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .product-name{font-family:var(--font-serif);font-size:17px;font-weight:600;}
+  .product-meta{font-size:12px;color:var(--ink-muted);}
+
+  .month-select{display:flex;align-items:center;gap:8px;}
+
+  .toast{
+    position:fixed;bottom:22px;right:22px;
+    background:var(--ink);color:#fff;
+    padding:10px 16px;border-radius:4px;font-size:13px;
+    opacity:0;transform:translateY(8px);
+    transition:opacity .2s, transform .2s;
+    pointer-events:none;
+    z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  .hint{font-size:11.5px;color:var(--ink-faint);margin-top:10px;line-height:1.6;}
+  .loading{padding:60px;text-align:center;color:var(--ink-muted);font-family:var(--font-serif);font-size:15px;}
+
+  .alloc-table{margin-top:10px;background:var(--paper-alt);border-radius:4px;padding:4px 8px;}
+  .alloc-row{display:flex;align-items:center;justify-content:space-between;padding:7px 8px;border-bottom:1px solid var(--hairline);font-size:12.5px;gap:10px;}
+  .alloc-row:last-child{border-bottom:none;}
+  .paid-form{display:flex;gap:6px;align-items:center;}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div id="app"><div class="loading">載入中…</div></div>
+
+<script>
+/* ---------------- State ---------------- */
+let state = { shareholders: [], products: [], entries: [], dividends: [], fxRates: {} };
+let ui = {
+  tab: 'dashboard',
+  month: null,
+  editingShareholderId: null,
+  editingProductId: null,
+  editingEntryId: null,
+  editingDividendId: null,
+  expandedDividendId: null,
+};
+
+const CURRENCIES = ['USD', 'AUD', 'NZD', 'TWD'];
+
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const todayStr = () => new Date().toISOString().slice(0, 10);
+const thisMonthStr = () => new Date().toISOString().slice(0, 7);
+
+function fmtNum(n, digits = 2) {
+  if (n === null || n === undefined || isNaN(n)) return '–';
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+function fmtMoney(n, ccy, digits = 2) {
+  if (n === null || n === undefined) return '–';
+  return (ccy ? ccy + ' ' : '') + fmtNum(n, digits);
+}
+function pnlClass(n) { return n > 0 ? 'pos' : (n < 0 ? 'neg' : ''); }
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function addMonths(dateStr, months) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setMonth(d.getMonth() + Number(months));
+  return d.toISOString().slice(0, 10);
+}
+// Native confirm()/alert() dialogs don't work inside this sandboxed artifact, so deletes use a
+// two-click "arm, then confirm" pattern on the button itself instead of a browser popup.
+function attachDeleteHandlers(main, performDelete) {
+  main.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', () => {
+      if (b.dataset.armed === '1') {
+        performDelete(b.dataset.del);
+        return;
+      }
+      main.querySelectorAll('[data-del]').forEach(other => {
+        if (other !== b && other.dataset.armed === '1') {
+          other.dataset.armed = '0';
+          other.textContent = other.dataset.label || '刪除';
+        }
+      });
+      b.dataset.label = b.textContent;
+      b.dataset.armed = '1';
+      b.textContent = '確定？再按一次';
+      clearTimeout(b._armTimer);
+      b._armTimer = setTimeout(() => { b.dataset.armed = '0'; b.textContent = b.dataset.label; }, 3000);
+    });
+  });
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------------- Storage — READ-ONLY STATIC SNAPSHOT ----------------
+   此版本為對外分享用的唯讀快照，資料在產生當下已寫死於下方 SNAPSHOT 常數中，
+   不會連線到任何資料庫，所有寫入動作皆為 no-op。若資料有異動，請由管理者
+   重新產生一份新的快照後更新此檔案。
+------------------------------------------------------------------- */
+const SNAPSHOT_AT = '2026-09-18 11:26 UTC';
+const SNAPSHOT = {
+  fxRates: {"AUD":22.8,"USD":31.8},
+  shareholders: [
+    {"id":"mu6vdhwwr8xjs","name":"綺麗國際","joinDate":"2026-09-05","note":""},
+    {"id":"mu6vdowdp6jha","name":"張瑋倫","joinDate":"2026-09-18","note":""},
+    {"id":"mu6vdtxnejsuf","name":"張瑋芳","joinDate":"2026-09-05","note":""}
+  ],
+  products: [
+    {"id":"mu6vf1q7zz71v","name":"DSNT102741","currency":"AUD","currentTotalValue":150000,"dividendRate":37.99,"lockupEnabled":true,"lockupMode":"unified","lockupMonths":null,"lockupUnifiedDate":"2027-08-16"}
+  ],
+  entries: [
+    {"id":"mu6vg3srqdkk7","amount":15334,"currency":"AUD","date":"2026-09-12","note":"","productId":"mu6vf1q7zz71v","shareholderId":"mu6vdhwwr8xjs","type":"in"},
+    {"id":"mu6vgp430ur08","amount":134666,"currency":"AUD","date":"2026-09-12","note":"","productId":"mu6vf1q7zz71v","shareholderId":"mu6vdtxnejsuf","type":"in"}
+  ],
+  dividends: []
+};
+const persistenceOk = false; // read-only: never used to show the "can't save" banner in this build
+async function dbSetRoot() {}
+async function dbSetDoc() {}
+async function dbDeleteDoc() {}
+async function loadAll() {
+  state.fxRates = { ...SNAPSHOT.fxRates };
+  state.shareholders = SNAPSHOT.shareholders.map(s => ({ ...s }));
+  state.products = SNAPSHOT.products.map(p => ({ ...p }));
+  state.entries = SNAPSHOT.entries.map(e => ({ ...e }));
+  state.dividends = SNAPSHOT.dividends.map(d => ({ ...d }));
+}
+
+/* ---------------- Domain helpers ---------------- */
+function shareholderName(id) {
+  const s = state.shareholders.find(x => x.id === id);
+  return s ? s.name : '（已刪除）';
+}
+function productById(id) { return state.products.find(x => x.id === id); }
+
+function allCurrenciesInUse() {
+  const set = new Set(CURRENCIES);
+  state.products.forEach(p => set.add(p.currency));
+  state.entries.forEach(e => set.add(e.currency));
+  set.delete('TWD');
+  return Array.from(set).sort();
+}
+function hasRate(ccy) { return ccy === 'TWD' || !!state.fxRates[ccy]; }
+function toTWD(amount, ccy) {
+  if (ccy === 'TWD') return amount;
+  const rate = state.fxRates[ccy];
+  return rate ? amount * rate : null;
+}
+
+// Net capital in TWD-equivalent, correct even when a shareholder mixes currencies within one product
+function netCapitalTWD(shareholderId, productId, asOfDate) {
+  const rows = state.entries.filter(e => e.shareholderId === shareholderId && e.productId === productId && (!asOfDate || e.date <= asOfDate));
+  let total = 0;
+  for (const e of rows) {
+    const v = toTWD(e.amount, e.currency);
+    if (v === null) continue; // rate not set yet — excluded until fx rate provided
+    total += (e.type === 'in' ? v : -v);
+  }
+  return total;
+}
+function productTotalNetCapitalTWD(productId, asOfDate) {
+  return state.shareholders.reduce((s, sh) => s + netCapitalTWD(sh.id, productId, asOfDate), 0);
+}
+// Raw (original-currency) contributed/withdrawn totals — only meaningful when the shareholder used a single currency for this product
+function rawTotal(shareholderId, productId, type) {
+  const rows = state.entries.filter(e => e.shareholderId === shareholderId && e.productId === productId && e.type === type);
+  if (!rows.length) return { ccy: null, amount: 0 };
+  const ccys = [...new Set(rows.map(r => r.currency))];
+  if (ccys.length > 1) return { ccy: 'mixed', amount: null };
+  return { ccy: ccys[0], amount: rows.reduce((s, r) => s + r.amount, 0) };
+}
+function currentTotalValue(product) {
+  return (product.currentTotalValue !== null && product.currentTotalValue !== undefined && product.currentTotalValue !== '')
+    ? Number(product.currentTotalValue)
+    : null; // resolved against TWD-based net capital at call site
+}
+function unlockDateFor(product, shareholderId) {
+  if (!product.lockupEnabled) return null;
+  if (product.lockupMode === 'unified') return product.lockupUnifiedDate || null;
+  const ins = state.entries.filter(e => e.shareholderId === shareholderId && e.productId === product.id && e.type === 'in');
+  if (!ins.length) return null;
+  const dates = ins.map(e => addMonths(e.date, product.lockupMonths || 0));
+  return dates.sort().slice(-1)[0];
+}
+function dividendPaidTotal(div) { return div.allocations.reduce((s, a) => s + (a.paid ? a.amount : 0), 0); }
+function dividendUnpaidTotal(div) { return div.allocations.reduce((s, a) => s + (a.paid ? 0 : a.amount), 0); }
+function allMonths() {
+  const set = new Set([thisMonthStr()]);
+  state.entries.forEach(e => set.add(e.date.slice(0, 7)));
+  state.dividends.forEach(d => { set.add(d.date.slice(0, 7)); d.allocations.forEach(a => { if (a.paidDate) set.add(a.paidDate.slice(0, 7)); }); });
+  return Array.from(set).sort().reverse();
+}
+
+/* ---------------- Render dispatch ---------------- */
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="shell">
+      <div class="sidebar">
+        <div class="brand">投資配息紀錄－UC<small>Shareholder Dividend Ledger</small><small>唯讀快照 · ${SNAPSHOT_AT}</small></div>
+        ${navItem('dashboard', '總覽 · 月結表')}
+        ${navItem('shareholders', '股東')}
+        ${navItem('products', '標的')}
+        ${navItem('entries', '出資與贖回')}
+        ${navItem('dividends', '配息紀錄')}
+      </div>
+      <div class="main" id="main"></div>
+    </div>`;
+  document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => { ui.tab = b.dataset.tab; render(); }));
+  const main = document.getElementById('main');
+  if (ui.tab === 'dashboard') renderDashboard(main);
+  else if (ui.tab === 'shareholders') renderShareholders(main);
+  else if (ui.tab === 'products') renderProducts(main);
+  else if (ui.tab === 'entries') renderEntries(main);
+  else if (ui.tab === 'dividends') renderDividends(main);
+  main.insertAdjacentHTML('afterbegin', `<div class="panel" style="border-color:var(--navy-soft)">
+    <strong style="color:var(--navy-soft)">唯讀快照</strong>
+    <p class="hint">此頁面僅供檢視，資料為 ${SNAPSHOT_AT} 當下的快照，不會即時更新。如需最新資料或有異動，請聯繫張瑋芳。</p>
+  </div>`);
+}
+function navItem(tab, label) {
+  return `<button class="nav-item ${ui.tab === tab ? 'active' : ''}" data-tab="${tab}">${label}</button>`;
+}
+
+/* ---------------- Dashboard ---------------- */
+function renderDashboard(main) {
+  if (!ui.month) ui.month = thisMonthStr();
+  const months = allMonths();
+  if (!months.includes(ui.month)) months.unshift(ui.month);
+  const ccys = allCurrenciesInUse();
+
+  let html = `
+    <div class="page-header">
+      <div>
+        <p class="page-title">月結總覽</p>
+        <p class="page-sub">依標的分別揭露本月資金流向與各股東持份現況，跨幣別一律以台幣換算比較</p>
+      </div>
+      <div class="month-select">
+        <label style="margin:0">結算月份</label>
+        <select id="monthSel">${months.map(m => `<option value="${m}" ${m === ui.month ? 'selected' : ''}>${m}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="panel">
+      <p class="panel-title">匯率（對台幣，快照當下數值）</p>
+      <div class="fx-panel">
+        ${ccys.map(c => `<div class="fx-item"><label>1 ${c} = ? TWD</label><div class="mono" style="padding:7px 0;font-size:13px;">${state.fxRates[c] ?? '–'}</div></div>`).join('')}
+      </div>
+    </div>`;
+
+  if (!state.products.length) {
+    html += `<div class="panel"><div class="empty">尚未建立任何投資標的。請先到「標的」頁籤新增一筆。</div></div>`;
+    main.innerHTML = html;
+    bindDashboardEvents();
+    return;
+  }
+
+  for (const p of state.products) {
+    const inThisMonth = state.entries.filter(e => e.productId === p.id && e.date.slice(0, 7) === ui.month && e.type === 'in');
+    const outThisMonth = state.entries.filter(e => e.productId === p.id && e.date.slice(0, 7) === ui.month && e.type === 'out');
+    const divsThisMonth = state.dividends.filter(d => d.productId === p.id && d.date.slice(0, 7) === ui.month);
+    const divIncomeThisMonth = divsThisMonth.reduce((s, d) => s + d.totalAmount, 0);
+    let payoutThisMonth = 0;
+    state.dividends.filter(d => d.productId === p.id).forEach(d => {
+      d.allocations.forEach(a => { if (a.paid && a.paidDate && a.paidDate.slice(0, 7) === ui.month) payoutThisMonth += a.amount; });
+    });
+    const allDivsForProduct = state.dividends.filter(d => d.productId === p.id);
+    const unpaidTotal = allDivsForProduct.reduce((s, d) => s + dividendUnpaidTotal(d), 0);
+
+    const totalNetTWD = productTotalNetCapitalTWD(p.id, null);
+    const overrideValue = currentTotalValue(p); // in product currency, or null = par
+    const totalValueTWD = overrideValue !== null ? toTWD(overrideValue, p.currency) : totalNetTWD;
+    const totalValueProductCcy = overrideValue !== null ? overrideValue : (hasRate(p.currency) ? totalNetTWD / state_rate(p.currency) : null);
+
+    const holders = state.shareholders.filter(s => state.entries.some(e => e.shareholderId === s.id && e.productId === p.id));
+
+    html += `
+      <div class="product-block">
+        <div class="product-head">
+          <div class="product-name">${esc(p.name)}</div>
+          <div class="product-meta">幣別 ${esc(p.currency)}${p.dividendRate !== null && p.dividendRate !== undefined ? ` · 配息率 ${fmtNum(p.dividendRate, 2)}%` : ''} · 目前總市值 ${overrideValue !== null ? fmtMoney(overrideValue, p.currency) : '未設定（以淨投入金額計算）'}${totalValueTWD !== null ? ` · 折合台幣 NT$${fmtNum(totalValueTWD, 0)}` : ''} ${lockupSummary(p)}</div>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-cell"><div class="summary-label">本月新增出資（各幣別加總，見明細）</div><div class="summary-value">${inThisMonth.length ? inThisMonth.map(e => fmtMoney(e.amount, e.currency)).join(' + ') : '–'}</div></div>
+          <div class="summary-cell"><div class="summary-label">本月贖回</div><div class="summary-value">${outThisMonth.length ? outThisMonth.map(e => fmtMoney(e.amount, e.currency)).join(' + ') : '–'}</div></div>
+          <div class="summary-cell"><div class="summary-label">本月配息收入</div><div class="summary-value">${fmtMoney(divIncomeThisMonth, p.currency)}</div></div>
+          <div class="summary-cell"><div class="summary-label">本月已撥配息</div><div class="summary-value">${fmtMoney(payoutThisMonth, p.currency)}</div></div>
+          <div class="summary-cell"><div class="summary-label">累計未撥配息（帳上現金）</div><div class="summary-value">${fmtMoney(unpaidTotal, p.currency)}</div></div>
+          <div class="summary-cell"><div class="summary-label">目前淨投入合計（折合台幣）</div><div class="summary-value">NT$ ${fmtNum(totalNetTWD, 0)}</div></div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>股東</th><th class="num">累計出資</th><th class="num">累計贖回</th><th class="num">淨投入</th><th class="num">折合台幣</th><th class="num">持份比例</th>
+            <th class="num">市值（原幣）</th><th class="num">未實現損益（台幣）</th><th class="num">累計損益（台幣）</th><th class="num">報酬率</th>
+            <th>鎖定狀態</th><th class="num">本月配息</th><th class="num">累計未撥配息</th>
+          </tr></thead>
+          <tbody>
+            ${holders.length ? holders.map(s => {
+              const netTWD = netCapitalTWD(s.id, p.id, null);
+              const grossIn = rawTotal(s.id, p.id, 'in');
+              const grossOut = rawTotal(s.id, p.id, 'out');
+              const pct = totalNetTWD > 0 ? (netTWD / totalNetTWD) * 100 : 0;
+              const mvProductCcy = totalValueProductCcy !== null ? totalValueProductCcy * (totalNetTWD > 0 ? netTWD / totalNetTWD : 0) : null;
+              const mvTWD = totalValueTWD !== null ? totalValueTWD * (totalNetTWD > 0 ? netTWD / totalNetTWD : 0) : null;
+              const unrealizedTWD = mvTWD !== null ? mvTWD - netTWD : null;
+              const allDivForShareholderTWD = allDivsForProduct.reduce((sum, d) => {
+                const a = d.allocations.find(x => x.shareholderId === s.id);
+                if (!a) return sum;
+                const v = toTWD(a.amount, p.currency);
+                return sum + (v !== null ? v : 0);
+              }, 0);
+              const totalPnlTWD = unrealizedTWD !== null ? unrealizedTWD + allDivForShareholderTWD : null;
+              const roiBasis = state.entries.filter(e => e.shareholderId === s.id && e.productId === p.id && e.type === 'in')
+                .reduce((sum, e) => { const v = toTWD(e.amount, e.currency); return sum + (v !== null ? v : 0); }, 0);
+              const roi = (totalPnlTWD !== null && roiBasis > 0) ? (totalPnlTWD / roiBasis) * 100 : null;
+              const unlock = unlockDateFor(p, s.id);
+              const locked = unlock && unlock > todayStr();
+              const shDivThisMonth = divsThisMonth.reduce((sum, d) => {
+                const a = d.allocations.find(x => x.shareholderId === s.id);
+                return sum + (a ? a.amount : 0);
+              }, 0);
+              const shUnpaid = allDivsForProduct.reduce((sum, d) => {
+                const a = d.allocations.find(x => x.shareholderId === s.id);
+                return sum + (a && !a.paid ? a.amount : 0);
+              }, 0);
+              return `<tr>
+                <td>${esc(s.name)}</td>
+                <td class="num">${grossIn.ccy === 'mixed' ? '混合幣別，見明細' : fmtMoney(grossIn.amount, grossIn.ccy)}</td>
+                <td class="num">${grossOut.ccy === 'mixed' ? '混合幣別，見明細' : fmtMoney(grossOut.amount, grossOut.ccy)}</td>
+                <td class="num">${(grossIn.ccy === 'mixed' || grossOut.ccy === 'mixed' || (grossIn.ccy && grossOut.ccy && grossIn.ccy !== grossOut.ccy)) ? '–' : (grossIn.ccy || grossOut.ccy ? fmtMoney((grossIn.amount||0)-(grossOut.amount||0), grossIn.ccy || grossOut.ccy) : '–')}</td>
+                <td class="num">NT$ ${fmtNum(netTWD, 0)}</td>
+                <td class="num">${fmtNum(pct, 1)}%</td>
+                <td class="num">${mvProductCcy !== null ? fmtMoney(mvProductCcy, p.currency) : '–'}</td>
+                <td class="num ${unrealizedTWD !== null ? pnlClass(unrealizedTWD) : ''}">${unrealizedTWD !== null ? 'NT$ ' + fmtNum(unrealizedTWD, 0) : '–'}</td>
+                <td class="num ${totalPnlTWD !== null ? pnlClass(totalPnlTWD) : ''}">${totalPnlTWD !== null ? 'NT$ ' + fmtNum(totalPnlTWD, 0) : '–'}</td>
+                <td class="num ${roi !== null ? pnlClass(roi) : ''}">${roi === null ? '–' : fmtNum(roi, 1) + '%'}</td>
+                <td>${unlock ? `<span class="tag ${locked ? 'locked' : 'unlocked'}">${locked ? '鎖定中至 ' + unlock : '已解鎖 ' + unlock}</span>` : '<span class="muted">無鎖定</span>'}</td>
+                <td class="num">${fmtNum(shDivThisMonth)}</td>
+                <td class="num">${fmtNum(shUnpaid)}</td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="13" class="empty">此標的尚無任何股東出資紀錄</td></tr>`}
+          </tbody>
+        </table>
+      </div>`;
+  }
+  main.innerHTML = html;
+  bindDashboardEvents();
+}
+function state_rate(ccy) { return ccy === 'TWD' ? 1 : state.fxRates[ccy]; }
+function lockupSummary(p) {
+  if (!p.lockupEnabled) return '';
+  if (p.lockupMode === 'unified') return `· 統一鎖定至 ${p.lockupUnifiedDate || '未設定'}`;
+  return `· 各筆出資鎖定 ${p.lockupMonths || 0} 個月`;
+}
+function bindDashboardEvents() {
+  const sel = document.getElementById('monthSel');
+  if (sel) sel.addEventListener('change', e => { ui.month = e.target.value; render(); });
+}
+
+/* ---------------- Shareholders ---------------- */
+function renderShareholders(main) {
+  main.innerHTML = `
+    <div class="page-header"><div><p class="page-title">股東</p><p class="page-sub">固定股東名單（唯讀）</p></div></div>
+    <div class="panel">
+      <p class="panel-title">股東名單（共 ${state.shareholders.length} 位）</p>
+      <table>
+        <thead><tr><th>姓名</th><th>加入日期</th><th>備註</th></tr></thead>
+        <tbody>
+          ${state.shareholders.length ? state.shareholders.map(s => `
+            <tr>
+              <td>${esc(s.name)}</td>
+              <td class="muted">${s.joinDate || '–'}</td>
+              <td class="muted">${esc(s.note || '–')}</td>
+            </tr>`).join('') : `<tr><td colspan="3" class="empty">尚無股東資料</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------------- Products ---------------- */
+function renderProducts(main) {
+  main.innerHTML = `
+    <div class="page-header"><div><p class="page-title">標的</p><p class="page-sub">投資標的清單（唯讀）</p></div></div>
+    <div class="panel">
+      <p class="panel-title">標的清單（共 ${state.products.length} 檔）</p>
+      <table>
+        <thead><tr><th>名稱</th><th>幣別</th><th class="num">配息率</th><th class="num">目前總市值</th><th>鎖定規則</th></tr></thead>
+        <tbody>
+          ${state.products.length ? state.products.map(p => `
+            <tr>
+              <td>${esc(p.name)}</td>
+              <td class="muted">${esc(p.currency)}</td>
+              <td class="num">${p.dividendRate !== null && p.dividendRate !== undefined ? fmtNum(p.dividendRate, 2) + '%' : '–'}</td>
+              <td class="num">${p.currentTotalValue !== null && p.currentTotalValue !== undefined ? fmtNum(p.currentTotalValue) : '（以淨投入計算）'}</td>
+              <td class="muted">${p.lockupEnabled ? (p.lockupMode === 'unified' ? '統一 ' + (p.lockupUnifiedDate || '未設定') : '各筆鎖定 ' + (p.lockupMonths || 0) + ' 個月') : '無'}</td>
+            </tr>`).join('') : `<tr><td colspan="5" class="empty">尚無標的資料</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* ---------------- Entries (contributions / withdrawals) ---------------- */
+function currencySelectHTML(id, selected) {
+  return `<select id="${id}">${CURRENCIES.map(c => `<option value="${c}" ${c === selected ? 'selected' : ''}>${c}</option>`).join('')}</select>`;
+}
+function renderEntries(main) {
+  const sorted = [...state.entries].sort((a, b) => b.date.localeCompare(a.date));
+  main.innerHTML = `
+    <div class="page-header"><div><p class="page-title">出資與贖回</p><p class="page-sub">出資／贖回紀錄（唯讀）</p></div></div>
+    <div class="panel">
+      <p class="panel-title">出資／贖回紀錄（共 ${state.entries.length} 筆）</p>
+      <table>
+        <thead><tr><th>日期</th><th>股東</th><th>標的</th><th>類型</th><th class="num">金額</th><th>備註</th></tr></thead>
+        <tbody>
+          ${sorted.length ? sorted.map(l => {
+            const p = productById(l.productId);
+            return `<tr>
+              <td>${l.date}</td>
+              <td>${esc(shareholderName(l.shareholderId))}</td>
+              <td>${p ? esc(p.name) : '（已刪除）'}</td>
+              <td>${l.type === 'in' ? '出資' : '贖回'}</td>
+              <td class="num">${fmtMoney(l.amount, l.currency)}</td>
+              <td class="muted">${esc(l.note || '–')}</td>
+            </tr>`;
+          }).join('') : `<tr><td colspan="6" class="empty">尚無出資或贖回紀錄</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+}
+function selectHTML(id, list, selectedId) {
+  return `<select id="${id}">${list.map(x => `<option value="${x.id}" ${x.id === selectedId ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>`;
+}
+
+/* ---------------- Dividends ---------------- */
+function renderDividends(main) {
+  const sorted = [...state.dividends].sort((a, b) => b.date.localeCompare(a.date));
+  main.innerHTML = `
+    <div class="page-header"><div><p class="page-title">配息紀錄</p><p class="page-sub">配息紀錄與撥款狀態（唯讀）</p></div></div>
+    <div class="panel">
+      <p class="panel-title">配息紀錄（共 ${state.dividends.length} 筆）</p>
+      <table>
+        <thead><tr><th>日期</th><th>標的</th><th class="num">總金額</th><th class="num">已撥款</th><th class="num">未撥款</th><th></th></tr></thead>
+        <tbody>
+          ${sorted.length ? sorted.map(d => {
+            const p = productById(d.productId);
+            const paid = dividendPaidTotal(d), unpaid = dividendUnpaidTotal(d);
+            const expanded = ui.expandedDividendId === d.id;
+            return `<tr>
+              <td>${d.date}</td>
+              <td>${p ? esc(p.name) : '（已刪除）'}</td>
+              <td class="num">${fmtMoney(d.totalAmount, p ? p.currency : '')}</td>
+              <td class="num pos">${fmtMoney(paid, p ? p.currency : '')}</td>
+              <td class="num ${unpaid > 0 ? 'neg' : ''}">${fmtMoney(unpaid, p ? p.currency : '')}</td>
+              <td><button class="btn-text" data-expand="${d.id}">${expanded ? '收合' : '展開分配'}</button></td>
+            </tr>
+            ${expanded ? `<tr><td colspan="6"><div class="alloc-table">
+              ${d.allocations.map(a => `
+                <div class="alloc-row">
+                  <span>${esc(shareholderName(a.shareholderId))}（台幣淨投入基準 NT$ ${fmtNum(a.basisTWD, 0)}）</span>
+                  <span class="mono">${fmtMoney(a.amount, p ? p.currency : '')}</span>
+                  ${a.paid ? `<span class="pos">✓ 已於 ${a.paidDate} 撥款</span>` : `<span class="muted">未撥款</span>`}
+                </div>`).join('')}
+            </div></td></tr>` : ''}`;
+          }).join('') : `<tr><td colspan="6" class="empty">尚無配息紀錄</td></tr>`}
+        </tbody>
+      </table>
+    </div>`;
+
+  main.querySelectorAll('[data-expand]').forEach(b => b.addEventListener('click', () => {
+    ui.expandedDividendId = ui.expandedDividendId === b.dataset.expand ? null : b.dataset.expand;
+    render();
+  }));
+}
+
+/* ---------------- Init ---------------- */
+(async function init() {
+  await loadAll();
+  render();
+})();
+</script>
+</body>
+</html>
