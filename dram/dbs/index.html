@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Dram 共同投資帳</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+  :root{
+    --paper:#eef1f5;
+    --surface:#ffffff;
+    --surface-2:#f6f8fa;
+    --line:#d5dde6;
+    --line-firm:#aebccb;
+    --ink:#13202e;
+    --ink-soft:#53667a;
+    --ink-faint:#8496a7;
+    --accent:#1b5e8f;
+    --accent-wash:#e2edf5;
+    --gain:#0f7a4d;
+    --gain-wash:#dff0e6;
+    --loss:#b23327;
+    --loss-wash:#fae3e0;
+    --idle:#8a6410;
+    --idle-wash:#f8ecd3;
+    --idle-line:#d9b567;
+    --radius:12px;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0e151d;
+      --surface:#151f2a;
+      --surface-2:#1a2531;
+      --line:#2a3947;
+      --line-firm:#3f5266;
+      --ink:#e7eef6;
+      --ink-soft:#a6b7c8;
+      --ink-faint:#75879a;
+      --accent:#5fa8d8;
+      --accent-wash:#17303f;
+      --gain:#4dbb84;
+      --gain-wash:#122f22;
+      --loss:#e08578;
+      --loss-wash:#361c19;
+      --idle:#d9b567;
+      --idle-wash:#33280f;
+      --idle-line:#8a6410;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0e151d;
+    --surface:#151f2a;
+    --surface-2:#1a2531;
+    --line:#2a3947;
+    --line-firm:#3f5266;
+    --ink:#e7eef6;
+    --ink-soft:#a6b7c8;
+    --ink-faint:#75879a;
+    --accent:#5fa8d8;
+    --accent-wash:#17303f;
+    --gain:#4dbb84;
+    --gain-wash:#122f22;
+    --loss:#e08578;
+    --loss-wash:#361c19;
+    --idle:#d9b567;
+    --idle-wash:#33280f;
+    --idle-line:#8a6410;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Noto Sans TC","Helvetica Neue",Arial,sans-serif;
+    font-size:14px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+  h1,h2,h3{font-family:"Noto Serif TC",Georgia,serif; margin:0; text-wrap:balance;}
+
+  .sheet{max-width:1080px; margin:0 auto; padding:28px 20px 72px; display:flex; flex-direction:column; gap:22px;}
+
+  /* masthead */
+  .masthead{display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;
+    padding-bottom:14px; border-bottom:2px solid var(--line-firm);}
+  .masthead h1{font-size:26px; letter-spacing:.01em;}
+  .masthead .sub{color:var(--ink-soft); font-size:12.5px; margin-top:3px;}
+  .masthead #updatedLine{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-faint);}
+  .conn{display:inline-flex; align-items:center; gap:7px; font-size:11.5px; color:var(--ink-soft);
+    border:1px solid var(--line); border-radius:999px; padding:4px 11px; background:var(--surface);}
+  .conn .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
+  .conn.live .dot{background:var(--gain); box-shadow:0 0 0 3px var(--gain-wash);}
+  .conn.local .dot{background:var(--idle); box-shadow:0 0 0 3px var(--idle-wash);}
+
+  /* params strip */
+  .strip{display:flex; gap:22px; flex-wrap:wrap; align-items:flex-end;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:13px 16px;}
+  .strip .f{display:flex; flex-direction:column; gap:3px;}
+  .strip label{font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-faint);}
+  .strip input{width:118px;}
+  .strip .hint{color:var(--ink-faint); font-size:11.5px; margin-left:auto; max-width:340px; text-align:right;}
+
+  /* summary row — figures are the point here, so tiles earn their place */
+  .totals{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);
+    border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  @media (max-width:760px){ .totals{grid-template-columns:repeat(2,1fr);} }
+  .tot{background:var(--surface); padding:14px 16px;}
+  .tot .k{font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-faint);}
+  .tot .v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:21px; font-weight:600; margin-top:5px; letter-spacing:-.01em;}
+  .tot .n{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+  .pos{color:var(--gain);} .neg{color:var(--loss);} .idle{color:var(--idle);}
+
+  /* people */
+  .people{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px;}
+  .person{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px; display:flex; flex-direction:column; gap:10px;}
+  .person .top{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+  .person .nm{font-family:"Noto Serif TC",serif; font-size:17px; font-weight:700;}
+  .person .sh{font-size:11px; color:var(--ink-faint); font-family:"IBM Plex Mono",monospace;}
+  .lines{display:flex; flex-direction:column; gap:0;}
+  .ln{display:flex; justify-content:space-between; gap:10px; font-size:12.5px; padding:3.5px 0; border-bottom:1px dotted var(--line);}
+  .ln:last-child{border-bottom:none;}
+  .ln span{color:var(--ink-soft);}
+  .ln b{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:500;}
+  .ln.cash{color:var(--idle);} .ln.cash span,.ln.cash b{color:var(--idle);}
+  .result{display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    padding-top:10px; border-top:1px solid var(--line);}
+  .result .amt{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:19px; font-weight:600;}
+  .chip{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; padding:2px 8px; border-radius:6px;}
+  .chip.pos{background:var(--gain-wash); color:var(--gain);}
+  .chip.neg{background:var(--loss-wash); color:var(--loss);}
+  .bar{height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden;}
+  .bar i{display:block; height:100%; border-radius:3px;}
+  .src{font-size:11px; color:var(--ink-faint); line-height:1.55;}
+
+  /* panels */
+  .panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px;}
+  .panel > h2{font-size:16px; margin-bottom:3px;}
+  .panel > .lead{font-size:12px; color:var(--ink-soft); margin:0 0 14px;}
+
+  /* cash reconciliation — the disputed number, shown as arithmetic */
+  .recon{display:flex; flex-wrap:wrap; align-items:stretch; gap:10px;}
+  .recon .item{flex:1 1 150px; background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:11px 13px;}
+  .recon .item .k{font-size:11px; color:var(--ink-soft);}
+  .recon .item .v{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:16px; font-weight:600; margin-top:3px;}
+  .recon .op{align-self:center; font-family:"IBM Plex Mono",monospace; font-size:17px; color:var(--ink-faint);}
+  .recon .item.total{background:var(--idle-wash); border-color:var(--idle-line);}
+  .recon .item.total .k,.recon .item.total .v{color:var(--idle);}
+
+  /* tables */
+  .scroll{overflow-x:auto; border:1px solid var(--line); border-radius:9px; background:var(--surface);}
+  table{border-collapse:collapse; width:100%; min-width:720px;}
+  thead th{position:sticky; top:0; background:var(--surface); z-index:1; text-align:right; white-space:nowrap;
+    font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint);
+    padding:9px 11px; border-bottom:1px solid var(--line-firm);}
+  tbody td{padding:8px 11px; border-bottom:1px solid var(--line); font-size:12.5px; text-align:right; white-space:nowrap;
+    font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover td{background:var(--surface-2);}
+  th.l,td.l{text-align:left; font-family:"Noto Sans TC",sans-serif;}
+  td.wrap{white-space:normal; min-width:170px; max-width:260px; color:var(--ink-soft); font-size:11.5px;}
+  .tag{display:inline-block; font-size:10.5px; padding:1px 8px; border-radius:999px; font-family:"Noto Sans TC",sans-serif;}
+  .tag.buy{background:var(--accent-wash); color:var(--accent);}
+  .tag.sell{background:var(--idle-wash); color:var(--idle);}
+  .tag.move{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+  .tag.pool{background:var(--gain-wash); color:var(--gain);}
+  .tag.solo{background:var(--accent-wash); color:var(--accent);}
+  .empty{text-align:center; color:var(--ink-faint); padding:22px; font-family:"Noto Sans TC",sans-serif;}
+
+  /* forms */
+  input,select,button{font-family:inherit; font-size:13px; color:var(--ink);}
+  input,select{padding:6px 9px; border:1px solid var(--line); border-radius:7px; background:var(--surface-2);}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+  .form{display:flex; flex-wrap:wrap; gap:9px; align-items:flex-end; margin-top:14px;}
+  .form .f{display:flex; flex-direction:column; gap:3px;}
+  .form label{font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint);}
+  .form input,.form select{width:112px;}
+  .form input.wide{width:230px;}
+  button{cursor:pointer; border-radius:7px; padding:7px 15px; font-weight:500; border:1px solid var(--line);
+    background:var(--surface-2);}
+  button:hover{border-color:var(--line-firm);}
+  button.go{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700;}
+  button.go:hover{filter:brightness(1.08);}
+  button.x{border:none; background:none; color:var(--loss); padding:2px 6px; font-size:12px;}
+  .splitbox{display:flex; flex-wrap:wrap; gap:9px; align-items:flex-end; margin-top:9px;
+    padding:11px 13px; background:var(--surface-2); border:1px solid var(--line); border-radius:9px;}
+  .splitbox .cap{width:100%; font-size:11.5px; color:var(--ink-soft);}
+  .editing{font-size:12px; color:var(--accent); align-self:center;}
+  button.e{border:none; background:none; color:var(--accent); padding:2px 6px; font-size:12px;}
+  button.e:hover{text-decoration:underline;}
+  tbody tr.rowediting td{background:var(--accent-wash);}
+  tbody tr.subtotal td{border-top:1px solid var(--line-firm); font-weight:600; background:var(--surface-2);}
+  tbody tr.grandrow td{background:var(--accent-wash);}
+  tbody tr.grandtotal td{border-top:2px solid var(--line-firm); font-weight:700;}
+  /* 備註裡寫「待核對」的列會整列標紅，方便回頭對帳單時一眼找到 */
+  tbody tr.rowadj td{font-style:italic; color:var(--ink-soft);}
+  tbody tr.rowcheck td{background:var(--loss-wash); color:var(--loss);}
+  tbody tr.rowcheck td b{color:var(--loss);}
+  tbody tr.rowcheck:hover td{background:var(--loss-wash); filter:brightness(.97);}
+  #toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:50;
+    max-width:min(90vw,520px); padding:11px 16px; border-radius:9px; font-size:13px; line-height:1.6;
+    box-shadow:0 6px 20px -6px rgba(0,0,0,.35); border:1px solid var(--line-firm);
+    background:var(--surface); color:var(--ink);}
+  #toast.warn{background:var(--loss-wash); color:var(--loss); border-color:var(--loss);}
+  #toast.ok{background:var(--gain-wash); color:var(--gain); border-color:var(--gain);}
+  button.x.armed{background:var(--loss); color:#fff; border-radius:5px; font-weight:700; padding:3px 8px;}
+  .badge-check{display:inline-block; font-size:10px; font-weight:700; letter-spacing:.04em;
+    background:var(--loss); color:#fff; border-radius:4px; padding:1px 6px; margin-right:6px;
+    font-family:"Noto Sans TC",sans-serif;}
+
+  details.rules{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 18px;}
+  details.rules summary{cursor:pointer; font-weight:500; color:var(--accent); font-size:13px;}
+  details.rules[open] summary{margin-bottom:9px;}
+  details.rules p{margin:0 0 8px; font-size:12.5px; color:var(--ink-soft); line-height:1.75;}
+  details.rules p:last-child{margin-bottom:0;}
+  details.rules b{color:var(--ink);}
+
+  .foot{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    font-size:11.5px; color:var(--ink-faint); border-top:1px solid var(--line); padding-top:13px;}
+  .foot .acts{display:flex; gap:8px;}
+  /* 唯讀模式：網址加 ?edit=1 才顯示編輯功能 */
+  body.ro .form, body.ro .splitbox, body.ro #panelBucket,
+  body.ro button.e, body.ro button.x, body.ro .strip{ display:none !important; }
+  body.ro .scroll table td:last-child:empty{ display:none; }
+  .ro-note{font-size:11.5px; color:var(--ink-faint); text-align:right;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important;} }
+</style>
+
+<div id="toast" hidden></div>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div>
+      <h1>Dram 共同投資帳</h1>
+      <div class="sub">共同池份額制 ＋ 個人專戶分開計算移動成本 · 金額以新台幣列示</div>
+      <div class="sub" id="updatedLine"></div>
+    </div>
+    <span class="conn" id="conn"><span class="dot"></span><span id="connTxt">連線中…</span></span>
+  </header>
+
+  <div class="strip">
+    <div class="f"><label>目前市價（原幣）</label><input type="number" id="pPrice" step="0.01"></div>
+    <div class="f"><label>匯率（兌台幣）</label><input type="number" id="pFx" step="0.01"></div>
+    <div class="f"><label>資料更新日期</label><input type="date" id="pUpdated"></div>
+    <div class="f"><label>買進分配</label><select id="pBuyMode" style="width:auto">
+      <option value="proRataCash">依各戶當下現金比例</option>
+      <option value="priority">個人專戶優先</option>
+    </select></div>
+    <div class="f"><label>賣出分配</label><select id="pSellMode" style="width:auto">
+      <option value="prorata">依各戶持有單位比例</option>
+      <option value="soloFirst">個人專戶優先</option>
+    </select></div>
+    <div class="f"><label>買進規則生效日</label><input type="date" id="pBuyFrom"></div>
+    <div class="f"><label>賣出規則生效日</label><input type="date" id="pSellFrom"></div>
+    <div class="hint">生效日當天及之後的交易一律套用「個人專戶優先」；之前的維持原記法。</div>
+  </div>
+
+  <div class="totals" id="totals"></div>
+
+  <div id="checkBanner"></div>
+
+  <section class="panel">
+    <h2>分潤總表</h2>
+    <p class="lead">共同池與個人池分開列帳。共同池那一列是依<b>份額比例</b>推算的，個人池那一列 100% 屬於本人。市值 ＝ 已投入 ＋ 未投入現金；淨損益 ＝ 市值 ＋ 累計提領 − 累計投入</p>
+    <div class="scroll">
+      <table style="min-width:820px">
+        <thead><tr>
+          <th class="l">姓名</th><th class="l">區塊</th><th>持分</th>
+          <th>累計投入</th><th>累計提領</th>
+          <th>已投入市值</th><th>未投入現金</th>
+          <th>已實現損益</th><th>未實現損益</th>
+          <th>淨損益</th><th>報酬率</th>
+        </tr></thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin:10px 0 0">已實現／未實現為概算，用來理解損益的來源；淨損益以「市值 ＋ 提領 − 投入」為準。</p>
+  </section>
+
+  <div class="people" id="people"></div>
+
+  <section class="panel">
+    <h2>共同池現金餘額怎麼來的</h2>
+    <p class="lead">賣出回收的錢如果還沒被下一筆買進花掉，就會留在帳戶裡。這個數字應該跟券商帳上的現金餘額對得起來——對不起來就表示出資或交易有漏記。</p>
+    <div class="recon" id="recon"></div>
+    <div id="flowWarn"></div>
+    <h3 style="font-size:14px;margin:20px 0 3px">資金流水</h3>
+    <p class="lead">每一筆進出與當下餘額。如果錢都拿去投入了，餘額在每次買進後應該接近 0；長期停在高檔，就表示有一筆出資被重複計算，或有買進沒記到。</p>
+    <div class="scroll">
+      <table style="min-width:600px">
+        <thead><tr><th class="l">日期</th><th class="l">事件</th><th>金額</th><th>餘額</th></tr></thead>
+        <tbody id="flowBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details class="rules">
+    <summary>記帳規則</summary>
+    <p><b>分戶</b>：整包部位在同一個券商帳戶，但帳上拆成「共同池」（大家集資、共用移動成本）與一個或多個「個人專戶」（某人自己另外加碼、成本價不同，單獨計算）。</p>
+    <p><b>買進</b>：要標明這筆錢各戶各出多少，單位數依出資金額比例分配，各戶只用自己那份更新自己的移動成本。</p>
+    <p><b>共同池的定義</b>：只有<b>三個人都出資</b>的那幾批才進共同池。只有一兩個人出錢的批次，照實記進各自的個人專戶——這樣份額才會反映真實的出資結構。</p>
+    <p><b>用帳上現金買進怎麼分</b>（預設）：依各戶<b>當下可動用現金的比例</b>出錢，誰也不插隊。因為時間成本也是成本——報酬應該反映各自的錢實際在市場裡待多久，而不是排隊順序。現金等比例消耗，所以也不會有哪一戶留下用不掉的尾數。</p>
+    <p><b>賣出怎麼分</b>（預設）：同一個帳戶無法指定賣誰的，所以依<b>賣出當下各戶持有單位數的比例</b>分攤。若某次賣出實際上就是某個人出清自己的某一批，編輯該筆時可以手動指定各戶單位數。</p>
+    <p><b>個人專戶優先</b>是另一個可選模式：讓有專戶的人的錢先進場、單位先出場。方便消化尾數，但在價格來回震盪時會系統性地讓有專戶的人佔便宜，分潤並不中性——要用請三方先講好。</p>
+      <p><b>生效日</b>：這套優先序從參數設定的生效日起自動套用到每一筆交易，不必逐筆設定。預設賣出自 <b>2026-07-14</b>、買進自 <b>2026-09-03</b>——買進晚一點是因為 7/14 那筆買進是張波實際另外匯 40,000 進自己專戶，屬於出資紀錄，不是拿帳上現金去分配。個別交易仍可在編輯時覆寫。</p>
+    <p><b>賣出</b>：同一個帳戶無法指定賣誰的，所以依「賣出當下」各戶持有單位數比例分攤股數與價金，各戶用自己的移動成本算自己的已實現損益。</p>
+    <p><b>共同池內部</b>：多人不同時間投入，依「同一批同時進場、用同一個淨值」換算份額，報酬率才會反映各自實際經歷的漲跌。</p>
+    <p><b>未投入現金</b>：池子裡尚未投入的現金——包含賣出回收、還沒有人提領、仍留在池內的已實現損益——依每個人<b>當下持分比例</b>分配到各自的「未投入」欄位。這筆錢再拿去買進時，會從「未投入」移到「已投入」，<b>最低只會到 0，不會變成負數</b>；若算出負值，代表有出資漏登或買進金額填錯，頁面會直接提醒。</p>
+    <p><b>出資金額</b>：填實際匯款的真實金額。如果某一筆買進有一部分是用帳戶裡既有的現金支應，那部分就不要登記成出資，否則會重複計算、灌出不存在的現金餘額。</p>
+  </details>
+
+  <section class="panel">
+    <h2>各戶移動成本明細</h2>
+    <p class="lead">每一戶自己的進出與加權平均成本</p>
+    <div id="buckets"></div>
+  </section>
+
+  <section class="panel">
+    <h2>交易紀錄</h2>
+    <p class="lead">買進要標明資金來自哪一戶；賣出由系統依持有比例自動分攤</p>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th class="l">日期</th><th class="l">別</th><th>單位數</th><th>單價</th><th>手續費</th><th>金額（原幣）</th>
+          <th class="l">資金分配</th><th class="l">備註</th><th></th>
+        </tr></thead>
+        <tbody id="tradeBody"></tbody>
+      </table>
+    </div>
+    <div class="form">
+      <div class="f"><label>日期</label><input type="date" id="tDate"></div>
+      <div class="f"><label>買賣別</label><select id="tSide"><option value="買">買進</option><option value="賣">賣出</option></select></div>
+      <div class="f"><label>單位數</label><input type="number" id="tUnits" step="0.000001"></div>
+      <div class="f"><label>單價</label><input type="number" id="tPrice" step="0.01"></div>
+      <div class="f"><label>手續費</label><input type="number" id="tFee" step="0.01" value="0"></div>
+      <div class="f"><label>金額（可留空）</label><input type="number" id="tAmt" step="0.01"></div>
+      <div class="f"><label>備註</label><input type="text" id="tNote" class="wide"></div>
+    </div>
+    <div class="splitbox" id="splitBox"></div>
+    <div class="form">
+      <button class="go" id="addTradeBtn">新增交易</button>
+      <button id="cancelTradeBtn" hidden>取消編輯</button>
+      <span class="editing" id="tradeEditing" hidden></span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>出資紀錄</h2>
+    <p class="lead">實際匯入或提領的錢。共同池要填姓名做內部份額分配；個人專戶直接歸該擁有人</p>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th class="l">日期</th><th class="l">戶</th><th class="l">姓名</th><th class="l">存／提</th>
+          <th>金額</th><th class="l">角色</th><th class="l">備註</th><th></th>
+        </tr></thead>
+        <tbody id="contribBody"></tbody>
+      </table>
+    </div>
+    <div class="form">
+      <div class="f"><label>日期</label><input type="date" id="cDate"></div>
+      <div class="f"><label>戶</label><select id="cBucket"></select></div>
+      <div class="f"><label>姓名</label><input type="text" id="cName"></div>
+      <div class="f"><label>存／提</label><select id="cDir"><option value="存入">存入</option><option value="提領">提領</option><option value="補償收">補償（收到）</option><option value="補償付">補償（支付）</option></select></div>
+      <div class="f"><label>金額（NT$）</label><input type="number" id="cAmt" step="1"></div>
+      <div class="f"><label>角色</label><select id="cRole"><option value="fixed">固定金額</option><option value="residual">補殘值</option></select></div>
+      <div class="f"><label>備註</label><input type="text" id="cNote" class="wide"></div>
+      <button class="go" id="addContribBtn">新增出資</button>
+      <button id="cancelContribBtn" hidden>取消編輯</button>
+      <span class="editing" id="contribEditing" hidden></span>
+    </div>
+  </section>
+
+  <section class="panel" id="panelBucket">
+    <h2>新增個人專戶</h2>
+    <p class="lead">某人自己另外加碼、成本價與大家不同時，開一個獨立的戶</p>
+    <div class="form">
+      <div class="f"><label>戶名稱</label><input type="text" id="bLabel" placeholder="例：張倫個人"></div>
+      <div class="f"><label>擁有人</label><input type="text" id="bOwner"></div>
+      <button class="go" id="addBucketBtn">新增專戶</button>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>損益未計入稅負與匯兌成本，請以券商對帳單為準。</span>
+    <span class="ro-note" id="roNote"></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var LS_KEY = "dram_ledger_local_v1";
+  var db = null, mode = "connecting";
+  var editing = {trade:null, contrib:null};
+  var splitSig = "";
+  var state = { params:{price:61.5, fx:31.5}, buckets:[], trades:[], contribs:[] };
+
+  /* ---------- helpers ---------- */
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function nt(n){
+    if(n == null || isNaN(n)) return "—";
+    var v = Math.round(n);
+    return (v < 0 ? "-" : "") + Math.abs(v).toLocaleString("en-US");
+  }
+  function d2(n){
+    if(n == null || isNaN(n)) return "—";
+    return Number(n).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function pct(n){ return (n >= 0 ? "+" : "") + (n*100).toFixed(1) + "%"; }
+  function byDate(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }
+  function el(id){ return document.getElementById(id); }
+
+  /* 頁面內訊息：Artifact 跑在沙箱 iframe，瀏覽器的 alert / confirm 可能被擋掉，
+     被擋掉時 confirm 會直接回傳 false，按鈕就像沒反應一樣。一律改用頁面內的提示。 */
+  var toastTimer = null;
+  function toast(msg, kind){
+    var t = el("toast");
+    t.className = kind || "";
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.hidden = true; }, 4000);
+  }
+
+  /* ---------- compute engine ---------- */
+  function computeAll(){
+    var fx = Number(state.params.fx) || 0;
+    var price = Number(state.params.price) || 0;
+    var trades = state.trades.slice().sort(byDate);
+    var bucketIds = state.buckets.map(function(b){ return b.id; });
+
+    var bState = {};
+    bucketIds.forEach(function(id){ bState[id] = { units:0, avgCost:0, ledger:[], cashRun:0 }; });
+
+    var tradeRows = [], transferRedemptions = [];
+
+    /* 資金優先序規則的生效日。買進與賣出分開，因為 7/14 的買進是張波真的另外
+       匯 40,000 進自己專戶，那是出資紀錄，不是用帳上現金去分配；而 7/14 的賣出
+       開始就該照「個人專戶優先」走。單筆交易上的 sellMode / splitsManual 可以覆寫。 */
+    var policySellFrom = state.params.policySellFrom || "2026-07-14";
+    var policyBuyFrom  = state.params.policyBuyFrom  || "2026-09-03";
+    var buyMode        = state.params.policyBuyMode  || "proRataCash";
+    var sellModeDefault = state.params.policySellMode || "prorata";
+
+    /* 依日期把出資灌進各戶的可動用現金，買進分配時才知道當下誰有多少錢。 */
+    /* 補償／調整：帳戶外的私下結算，不是出資也不是提領。
+       它不動現金、不動份額、不動單位，只調整各人的最終損益。 */
+    function isAdj(c){ return c.dir === "補償收" || c.dir === "補償付"; }
+    function adjOf(c){ return c.dir === "補償收" ? Number(c.amt) : c.dir === "補償付" ? -Number(c.amt) : 0; }
+    var contribQueue = state.contribs.slice().sort(byDate), ci = 0;
+    function cashUpTo(date){
+      while(ci < contribQueue.length && contribQueue[ci].date <= date){
+        var c = contribQueue[ci++], b = bState[c.bucket];
+        if(isAdj(c)) continue;
+        if(b) b.cashRun += (c.dir === "存入" ? 1 : -1) * Number(c.amt);
+      }
+    }
+    /* 個人專戶優先，持有少的先，共同池永遠最後。 */
+    function payOrder(){
+      return bucketIds.slice().sort(function(a,b){
+        if(a === "pool") return 1;
+        if(b === "pool") return -1;
+        return bState[a].units - bState[b].units;
+      });
+    }
+
+    trades.forEach(function(t){
+      cashUpTo(t.date);
+      if(t.side === "轉讓"){
+        var from = bState[t.fromBucket], to = bState[t.toBucket];
+        if(!from || !to){ tradeRows.push(Object.assign({}, t, {amount:0})); return; }
+        var proceeds = t.units * t.price;
+        var rp = proceeds - from.avgCost * t.units;
+        from.units -= t.units;
+        from.ledger.push({date:t.date, side:"賣", units:t.units, amount:proceeds, cumUnits:from.units, avgCost:from.avgCost, realizedPnL:rp});
+        var nu = to.units + t.units;
+        to.avgCost = nu === 0 ? 0 : (to.units*to.avgCost + proceeds) / nu;
+        to.units = nu;
+        to.ledger.push({date:t.date, side:"買", units:t.units, amount:proceeds, cumUnits:to.units, avgCost:to.avgCost, realizedPnL:null});
+        from.cashRun += proceeds * fx;
+        to.cashRun   -= proceeds * fx;
+        if(t.fromBucket === "pool" && t.chargeToName){
+          transferRedemptions.push({date:t.date, name:t.chargeToName, amt:proceeds*fx, note:t.note});
+        }
+        tradeRows.push(Object.assign({}, t, {amount:proceeds}));
+        return;
+      }
+
+      var total = (t.amt != null && t.amt !== "") ? Number(t.amt)
+        : (t.side === "買" ? t.units*t.price + (t.fee||0) : t.units*t.price - (t.fee||0));
+
+      if(t.side === "買"){
+        var totalNT = total * fx;
+        var splits;
+        if(!t.splitsManual && t.date >= policyBuyFrom){
+          splits = {};
+          var leftNT = totalNT;
+          if(buyMode === "priority"){
+            /* 優先序：先用完個人專戶的閒置現金，剩下的才由共同池支應。
+               會讓有專戶的人插隊拿到每一個好價格，分潤並不中性。 */
+            payOrder().forEach(function(bid){
+              if(leftNT <= 0.5 || bid === "pool") return;
+              var avail = bState[bid].cashRun;
+              if(avail <= 0.5) return;
+              var take = Math.min(avail, leftNT);
+              splits[bid] = take; leftNT -= take;
+            });
+            if(leftNT > 0.5) splits.pool = leftNT;
+          } else {
+            /* 按現金比例：用帳上現金買進時，各戶依「當下可動用現金」等比例出錢，
+               誰也不插隊——報酬才會反映各自的錢實際在市場裡待多久。
+               現金等比例消耗，所以也不會有哪一戶留下尾數。 */
+            var poolCash0 = 0;
+            bucketIds.forEach(function(bid){ poolCash0 += Math.max(0, bState[bid].cashRun); });
+            if(poolCash0 > 0.5){
+              var used = 0;
+              bucketIds.forEach(function(bid){
+                var avail = Math.max(0, bState[bid].cashRun);
+                if(avail <= 0) return;
+                var take = Math.min(leftNT * (avail / poolCash0), avail);
+                if(take > 0.005){ splits[bid] = take; used += take; }
+              });
+              leftNT -= used;
+            }
+            if(leftNT > 0.5) splits.pool = (splits.pool || 0) + leftNT;
+          }
+        } else {
+          splits = t.splits || {pool: totalNT};
+          var sumNT = 0;
+          Object.keys(splits).forEach(function(k){ sumNT += Number(splits[k]) || 0; });
+          if(sumNT) totalNT = sumNT;
+        }
+        bucketIds.forEach(function(bid){
+          var shareNT = Number(splits[bid] || 0);
+          if(shareNT <= 0) return;
+          var b = bState[bid];
+          var shareUnits = t.units * (shareNT / totalNT);
+          var shareUSD = shareNT / fx;
+          var nu2 = b.units + shareUnits;
+          b.avgCost = nu2 === 0 ? 0 : (b.units*b.avgCost + shareUSD) / nu2;
+          b.units = nu2;
+          b.cashRun -= shareNT;
+          b.ledger.push({date:t.date, side:"買", units:shareUnits, amount:shareUSD, cumUnits:b.units, avgCost:b.avgCost, realizedPnL:null});
+        });
+        tradeRows.push(Object.assign({}, t, {amount:total, splits:splits}));
+      } else {
+        var all = bucketIds.reduce(function(s,id){ return s + bState[id].units; }, 0);
+        var alloc = {};
+        var manual = t.sellAlloc && Object.keys(t.sellAlloc).some(function(k){ return Number(t.sellAlloc[k]) > 0; });
+        var soloFirst = !manual && (t.sellMode === "soloFirst" ||
+          (t.sellMode !== "prorata" && sellModeDefault === "soloFirst" && t.date >= policySellFrom));
+        if(manual){
+          /* 手動指定各戶賣出單位數——實際成交就是某個人賣掉自己的某一批時用。 */
+          Object.keys(t.sellAlloc).forEach(function(bid){
+            var v = Number(t.sellAlloc[bid]) || 0;
+            if(v > 0 && bState[bid]) alloc[bid] = v;
+          });
+        } else if(soloFirst){
+          /* 先賣個人專戶（持有少的先），剩餘才動共同池。 */
+          var order = payOrder();
+          var left = t.units;
+          order.forEach(function(bid){
+            if(left <= 1e-9) return;
+            var take = Math.min(bState[bid].units, left);
+            if(take > 1e-9){ alloc[bid] = take; left -= take; }
+          });
+          if(left > 1e-9) alloc.pool = (alloc.pool || 0) + left;
+        } else {
+          bucketIds.forEach(function(bid){
+            if(bState[bid].units <= 0 || all <= 0) return;
+            alloc[bid] = t.units * (bState[bid].units / all);
+          });
+        }
+        var detail = {};
+        Object.keys(alloc).forEach(function(bid){
+          var b = bState[bid];
+          var soldUnits = alloc[bid];
+          var proceeds2 = t.units ? total * (soldUnits / t.units) : 0;
+          var rp2 = proceeds2 - b.avgCost * soldUnits;
+          b.units -= soldUnits;
+          b.cashRun += proceeds2 * fx;
+          b.ledger.push({date:t.date, side:"賣", units:soldUnits, amount:proceeds2, cumUnits:b.units, avgCost:b.avgCost, realizedPnL:rp2});
+          detail[bid] = {soldUnits:soldUnits, proceeds:proceeds2, realizedPnL:rp2};
+        });
+        tradeRows.push(Object.assign({}, t, {amount:total, sellDetail:detail, soloFirst:soloFirst, manualSell:manual}));
+      }
+    });
+
+    /* ----- pool: unit/NAV allocation between people ----- */
+    var poolLedger = bState["pool"] ? bState["pool"].ledger : [];
+    var transferRows = transferRedemptions.map(function(tr){
+      return {date:tr.date, bucket:"pool", name:tr.name, dir:"提領", amt:tr.amt, role:"residual", note:tr.note || "內部轉讓：份額讓出"};
+    });
+    var poolRaw = state.contribs.filter(function(c){ return c.bucket === "pool" && !isAdj(c); })
+      .concat(transferRows).sort(byDate);
+
+    function unitsAsOf(cut){
+      var prior = poolLedger.filter(function(r){ return r.date < cut; });
+      return prior.length ? prior[prior.length-1].cumUnits : 0;
+    }
+    function priceAsOf(cut){
+      var prior = poolLedger.filter(function(r){ return r.date < cut; });
+      if(prior.length) return prior[prior.length-1].amount / prior[prior.length-1].units;
+      var same = poolLedger.filter(function(r){ return r.date === cut; });
+      if(same.length) return same[0].amount / same[0].units;
+      return 0;
+    }
+
+    var running = 0, poolRows = [];
+    for(var i = 0; i < poolRaw.length; i++){
+      var c = poolRaw[i], cut = c.date;
+      var units = unitsAsOf(cut), p0 = priceAsOf(cut);
+      var cashIn = 0, baseline = 0;
+      for(var j = 0; j < i; j++){
+        if(poolRaw[j].date < cut){
+          cashIn += poolRaw[j].dir === "存入" ? Number(poolRaw[j].amt) : -Number(poolRaw[j].amt);
+          baseline = poolRaw[j]._shares;
+        }
+      }
+      var tradeCash = 0;
+      poolLedger.filter(function(r){ return r.date < cut; }).forEach(function(r){
+        tradeCash += (r.side === "買" ? -r.amount : r.amount) * fx;
+      });
+      var poolVal = cashIn + tradeCash + units*p0*fx;
+      var nav = baseline === 0 ? 1 : poolVal/baseline;
+      var delta = (c.dir === "存入" ? 1 : -1) * Number(c.amt) / nav;
+      running += delta;
+      poolRaw[i]._shares = running;
+      poolRows.push(Object.assign({}, c, {nav:nav, sharesDelta:delta}));
+    }
+
+    var contribNet = 0;
+    poolRaw.forEach(function(c){ contribNet += c.dir === "存入" ? Number(c.amt) : -Number(c.amt); });
+    var boughtNT = 0, soldNT = 0;
+    poolLedger.forEach(function(r){
+      if(r.side === "買") boughtNT += r.amount * fx; else soldNT += r.amount * fx;
+    });
+    var poolCash = contribNet - boughtNT + soldNT;
+    if(Math.abs(poolCash) < 1) poolCash = 0;
+    /* 未投入現金的下限是 0：錢再投入下去最多只能歸零，不會變成負的。
+       負值代表買進金額超過帳上可動用資金——通常是漏登一筆出資，或買進金額填錯，
+       用 poolShort 把缺口挑出來提醒，而不是讓它變成一個假的負數分給每個人。 */
+    var poolShort = poolCash < 0 ? poolCash : 0;
+    var poolCashShare = Math.max(0, poolCash);
+
+    var poolUnits = bState["pool"] ? bState["pool"].units : 0;
+    var poolAvg = bState["pool"] ? bState["pool"].avgCost : 0;
+    var totalShares = poolRows.length ? poolRows[poolRows.length-1].sharesDelta + 0 : 0;
+    totalShares = poolRows.reduce(function(s,r){ return s + r.sharesDelta; }, 0);
+    var poolValue = poolCash + poolUnits*price*fx;
+    var poolNav = totalShares === 0 ? 1 : poolValue/totalShares;
+    var poolRealized = poolLedger.filter(function(l){ return l.realizedPnL != null; })
+      .reduce(function(s,l){ return s + l.realizedPnL; }, 0) * fx;
+    var poolUnrealized = poolUnits * (price - poolAvg) * fx;
+
+    /* Idle pool cash belongs to every pool holder, split by CURRENT share ratio. */
+    var names = [];
+    poolRows.forEach(function(r){ if(names.indexOf(r.name) === -1) names.push(r.name); });
+    var poolPeople = names.map(function(name){
+      var rows = poolRows.filter(function(r){ return r.name === name; });
+      var contributed = rows.filter(function(r){ return r.dir === "存入"; }).reduce(function(s,r){ return s + Number(r.amt); }, 0);
+      var redeemed = rows.filter(function(r){ return r.dir === "提領"; }).reduce(function(s,r){ return s + Number(r.amt); }, 0);
+      var shares = rows.reduce(function(s,r){ return s + r.sharesDelta; }, 0);
+      var ratio = totalShares ? shares/totalShares : 0;
+      var value = shares*poolNav;
+      var cashShare = poolCashShare * ratio;
+      return {name:name, contributed:contributed, redeemed:redeemed, shares:shares, ratio:ratio,
+        value:value, cashShare:cashShare,
+        realized:poolRealized*ratio, unrealized:poolUnrealized*ratio};
+    });
+
+    var solos = state.buckets.filter(function(b){ return b.id !== "pool"; }).map(function(b){
+      var rows = state.contribs.filter(function(c){ return c.bucket === b.id; });
+      var contributed = rows.filter(function(c){ return c.dir === "存入"; }).reduce(function(s,c){ return s + Number(c.amt); }, 0);
+      var redeemed = rows.filter(function(c){ return c.dir === "提領"; }).reduce(function(s,c){ return s + Number(c.amt); }, 0);
+      var cash = contributed - redeemed;
+      bState[b.id].ledger.forEach(function(r){ cash += (r.side === "買" ? -r.amount : r.amount) * fx; });
+      if(Math.abs(cash) < 1) cash = 0;
+      var units = bState[b.id].units;
+      return {id:b.id, label:b.label, owner:b.owner, contributed:contributed, redeemed:redeemed,
+        units:units, cash:cash, cashDisp:Math.max(0, cash), short:(cash < 0 ? cash : 0),
+        value:cash + units*price*fx,
+        unrealized:units*(price - bState[b.id].avgCost)*fx,
+        realized:bState[b.id].ledger.filter(function(l){ return l.realizedPnL != null; })
+          .reduce(function(s,l){ return s + l.realizedPnL; }, 0) * fx};
+    });
+
+    var allNames = names.slice();
+    solos.forEach(function(s){ if(s.owner && allNames.indexOf(s.owner) === -1) allNames.push(s.owner); });
+    var dashboard = allNames.map(function(name){
+      var pp = poolPeople.filter(function(p){ return p.name === name; })[0];
+      var mine = solos.filter(function(s){ return s.owner === name; });
+      var sum = function(f){ return mine.reduce(function(s,x){ return s + x[f]; }, 0); };
+      var contributed = (pp ? pp.contributed : 0) + sum("contributed");
+      var redeemed = (pp ? pp.redeemed : 0) + sum("redeemed");
+      var value = (pp ? pp.value : 0) + sum("value");
+      var cashPart = (pp ? pp.cashShare : 0) + sum("cashDisp");
+      var adj = state.contribs.filter(function(c){ return c.name === name && isAdj(c); })
+        .reduce(function(s2,c){ return s2 + adjOf(c); }, 0);
+      var pnl = value + redeemed - contributed + adj;
+      /* 共同池與個人池分開列帳：共同池那份是依份額推算的，個人池那份 100% 是本人的。 */
+      var poolBlock = {
+        contributed: pp ? pp.contributed : 0,
+        redeemed: pp ? pp.redeemed : 0,
+        value: pp ? pp.value : 0,
+        cash: pp ? pp.cashShare : 0,
+        realized: pp ? pp.realized : 0,
+        unrealized: pp ? pp.unrealized : 0,
+        ratio: pp ? pp.ratio : 0
+      };
+      poolBlock.invested = poolBlock.value - poolBlock.cash;
+      poolBlock.pnl = poolBlock.value + poolBlock.redeemed - poolBlock.contributed;
+      poolBlock.pct = poolBlock.contributed ? poolBlock.pnl / poolBlock.contributed : 0;
+
+      var soloBlock = {
+        contributed: sum("contributed"), redeemed: sum("redeemed"),
+        value: sum("value"), cash: sum("cashDisp"),
+        realized: sum("realized"), unrealized: sum("unrealized"),
+        labels: mine.map(function(x){ return x.label; }),
+        units: sum("units")
+      };
+      soloBlock.invested = soloBlock.value - soloBlock.cash;
+      soloBlock.pnl = soloBlock.value + soloBlock.redeemed - soloBlock.contributed;
+      soloBlock.pct = soloBlock.contributed ? soloBlock.pnl / soloBlock.contributed : 0;
+
+      return {name:name, contributed:contributed, redeemed:redeemed, value:value, pnl:pnl, adj:adj,
+        pct: contributed ? pnl/contributed : 0,
+        poolValue: poolBlock.value, ratio: poolBlock.ratio,
+        soloValue: soloBlock.value, soloLabels: soloBlock.labels,
+        poolContributed: poolBlock.contributed, soloContributed: soloBlock.contributed,
+        poolBlock: poolBlock, soloBlock: soloBlock,
+        realized: poolBlock.realized + soloBlock.realized,
+        unrealized: poolBlock.unrealized + soloBlock.unrealized,
+        cashPart: cashPart, investedPart: value - cashPart};
+    });
+
+    /* Chronological cash movements of the pool, with running balance.
+       This is the reconciliation instrument: if the account was never meant to
+       hold idle cash, the balance should return to ~0 after each buy. */
+    var rank = {"出資":0, "買":1, "賣":2};
+    var flow = [];
+    poolRaw.forEach(function(c){
+      if(isAdj(c)) return;
+      flow.push({date:c.date, kind:"出資", what:(c.dir === "存入" ? "出資 " : "提領 ") + c.name,
+        nt:(c.dir === "存入" ? 1 : -1) * Number(c.amt)});
+    });
+    poolLedger.forEach(function(l){
+      flow.push({date:l.date, kind:l.side,
+        what:(l.side === "買" ? "買進 " : "賣出 ") + d2(l.units) + " 單位",
+        nt:(l.side === "買" ? -1 : 1) * l.amount * fx});
+    });
+    flow.sort(function(a,b){
+      if(a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return (rank[a.kind] || 0) - (rank[b.kind] || 0);
+    });
+    var bal = 0;
+    flow.forEach(function(f){ bal += f.nt; f.bal = bal; });
+    var lowest = flow.length ? Math.min.apply(null, flow.map(function(f){ return f.bal; })) : 0;
+
+    return {tradeRows:tradeRows, bState:bState, poolRows:poolRows, dashboard:dashboard, solos:solos,
+      poolCash:poolCash, poolUnits:poolUnits, poolAvg:poolAvg, poolNav:poolNav, poolValue:poolValue,
+      contribNet:contribNet, boughtNT:boughtNT, soldNT:soldNT, flow:flow, lowestBal:lowest,
+      shortfall: poolShort + solos.reduce(function(s,x){ return s + x.short; }, 0)};
+  }
+
+  /* ---------- render ---------- */
+  /* 資金優先序：買進的錢先用個人專戶的閒置現金，持有比例小的人先付，
+     用完才動共同池。這樣個人專戶不會留下一筆用不掉的尾數。
+     （共同池的現金是三個人依份額共有的，沒有辦法單獨指定某一個人先付——
+      要讓某人單獨出錢，那是一筆新的出資，會改變份額。） */
+  function computeOn(s){
+    var saved = state;
+    state = s;
+    try { return computeAll(); } finally { state = saved; }
+  }
+  function autoSplit(totalNT, excludeTradeId){
+    var snapshot = {
+      params: state.params, buckets: state.buckets, contribs: state.contribs,
+      trades: state.trades.filter(function(t){ return t.id !== excludeTradeId; })
+    };
+    var r = computeOn(snapshot);
+    var ratioOf = {};
+    r.dashboard.forEach(function(p){ ratioOf[p.name] = p.ratio; });
+    var solos = r.solos.filter(function(s){ return s.cash > 0.5; });
+    solos.sort(function(a,b){
+      var ra = ratioOf[a.owner] || 0, rb = ratioOf[b.owner] || 0;
+      return ra !== rb ? ra - rb : a.cash - b.cash;
+    });
+    var out = {}, left = totalNT;
+    solos.forEach(function(s){
+      if(left <= 0.5) return;
+      var take = Math.min(s.cash, left);
+      out[s.id] = Math.round(take * 100) / 100;
+      left -= take;
+    });
+    if(left > 0.5) out.pool = Math.round(left * 100) / 100;
+    return out;
+  }
+  function formTotalNT(){
+    var units = parseFloat(el("tUnits").value), price = parseFloat(el("tPrice").value);
+    var fee = parseFloat(el("tFee").value) || 0;
+    var amtRaw = el("tAmt").value;
+    if(isNaN(units) || isNaN(price)) return NaN;
+    var usd = amtRaw !== "" ? parseFloat(amtRaw) : (units * price + fee);
+    return usd * (Number(state.params.fx) || 0);
+  }
+
+  function bucketLabel(id){
+    var b = state.buckets.filter(function(x){ return x.id === id; })[0];
+    return b ? b.label : id;
+  }
+
+  function render(){
+    el("pPrice").value = state.params.price;
+    el("pFx").value = state.params.fx;
+    el("pUpdated").value = state.params.updated || "";
+    el("updatedLine").textContent = state.params.updated
+      ? "資料更新日期：" + state.params.updated + "　·　市價 " + state.params.price + "　匯率 " + state.params.fx
+      : "";
+    el("pSellFrom").value = state.params.policySellFrom || "2026-07-14";
+    el("pBuyFrom").value = state.params.policyBuyFrom || "2026-09-03";
+    el("pBuyMode").value = state.params.policyBuyMode || "proRataCash";
+    el("pSellMode").value = state.params.policySellMode || "prorata";
+
+    var r = computeAll();
+
+    var tc = r.dashboard.reduce(function(s,p){ return s + p.contributed; }, 0);
+    var tv = r.dashboard.reduce(function(s,p){ return s + p.value; }, 0);
+    var tp = r.dashboard.reduce(function(s,p){ return s + p.pnl; }, 0);
+    var tcash = r.dashboard.reduce(function(s,p){ return s + p.cashPart; }, 0);
+    var tpct = tc ? tp/tc : 0;
+    el("totals").innerHTML =
+      '<div class="tot"><div class="k">累計投入</div><div class="v">' + nt(tc) + '</div><div class="n">實際匯入淨額</div></div>' +
+      '<div class="tot"><div class="k">目前總市值</div><div class="v">' + nt(tv) + '</div><div class="n">持股市值 ＋ 帳上現金</div></div>' +
+      '<div class="tot"><div class="k">總損益</div><div class="v ' + (tp>=0?"pos":"neg") + '">' + (tp>=0?"+":"") + nt(tp) +
+        '</div><div class="n">報酬率 ' + pct(tpct) + '</div></div>' +
+      '<div class="tot"><div class="k">尚未投入</div><div class="v ' + (tcash>0?"idle":"") + '">' + nt(tcash) +
+        '</div><div class="n">' + (tv ? (tcash/tv*100).toFixed(1) : "0.0") + '% 的資產是現金</div></div>';
+
+    var pending = state.trades.filter(function(t){ return /待核對/.test(t.note || ""); })
+      .concat(state.contribs.filter(function(c){ return /待核對/.test(c.note || ""); }))
+      .sort(byDate);
+    el("checkBanner").innerHTML = pending.length
+      ? '<div style="padding:13px 16px;border:1px solid var(--loss);background:var(--loss-wash);' +
+        'color:var(--loss);border-radius:var(--radius);font-size:12.5px;line-height:1.7">' +
+        '<b>有 ' + pending.length + ' 筆待核對</b>（下方表格中整列標紅）：' +
+        pending.map(function(x){
+          return esc(x.date) + ' ' + esc(x.side || x.name || "") +
+            (x.units != null ? ' ' + x.units + ' 單位' : (x.amt != null ? ' ' + nt(x.amt) : ""));
+        }).join('；') +
+        '<br>數字是用帳上差額反推的，請以券商對帳單核對後編輯修正；改好後把備註裡的「待核對」拿掉，這個提醒就會消失。</div>'
+      : "";
+
+    var sums = {contributed:0, redeemed:0, invested:0, cash:0, realized:0, unrealized:0, pnl:0};
+    var poolSums = {contributed:0, redeemed:0, invested:0, cash:0, realized:0, unrealized:0, pnl:0};
+    var soloSums = {contributed:0, redeemed:0, invested:0, cash:0, realized:0, unrealized:0, pnl:0};
+    function addTo(acc, b){
+      acc.contributed += b.contributed; acc.redeemed += b.redeemed;
+      acc.invested += b.invested; acc.cash += b.cash;
+      acc.realized += b.realized; acc.unrealized += b.unrealized; acc.pnl += b.pnl;
+    }
+    function sgn(v){
+      return '<td class="' + (v > 0 ? "pos" : v < 0 ? "neg" : "") + '">' + (v > 0 ? "+" : "") + nt(v) + '</td>';
+    }
+    function blockRow(label, share, b, opt){
+      opt = opt || {};
+      return '<tr' + (opt.cls ? ' class="' + opt.cls + '"' : '') + '>' +
+        (opt.name != null
+          ? '<td class="l" style="font-weight:700' + (opt.rowspan ? '" rowspan="' + opt.rowspan : '') + '">' + esc(opt.name) + '</td>'
+          : '') +
+        '<td class="l"' + (opt.strong ? ' style="font-weight:600"' : '') + '>' + esc(label) + '</td>' +
+        '<td>' + share + '</td>' +
+        '<td>' + nt(b.contributed) + '</td>' +
+        '<td>' + (b.redeemed ? nt(b.redeemed) : "—") + '</td>' +
+        '<td>' + nt(b.invested) + '</td>' +
+        '<td class="' + (b.cash > 0 ? "idle" : "") + '">' + nt(b.cash) + '</td>' +
+        sgn(b.realized) + sgn(b.unrealized) + sgn(b.pnl) +
+        '<td class="' + (b.pnl >= 0 ? "pos" : "neg") + '">' +
+          (b.contributed ? pct(b.pnl / b.contributed) : "—") + '</td>' +
+      '</tr>';
+    }
+
+    var rows = "";
+    r.dashboard.forEach(function(p){
+      var pb = p.poolBlock, sb = p.soloBlock;
+      var hasSolo = sb.contributed > 0 || Math.abs(sb.value) > 1;
+      var total = {
+        contributed: pb.contributed + sb.contributed, redeemed: pb.redeemed + sb.redeemed,
+        invested: pb.invested + sb.invested, cash: pb.cash + sb.cash,
+        realized: pb.realized + sb.realized, unrealized: pb.unrealized + sb.unrealized,
+        pnl: pb.pnl + sb.pnl
+      };
+      var hasAdj = Math.abs(p.adj || 0) > 0.5;
+      if(hasAdj){
+        total.pnl += p.adj;
+      }
+      addTo(poolSums, pb); if(hasSolo) addTo(soloSums, sb); addTo(sums, total);
+
+      var nBlocks = 2 + (hasSolo ? 1 : 0) + (hasAdj ? 1 : 0);
+      rows += blockRow("共同池", (pb.ratio*100).toFixed(1) + "%", pb,
+        {name:p.name, rowspan: nBlocks});
+      if(hasSolo){
+        rows += blockRow(sb.labels.join("、") || "個人池", "100%", sb, {});
+      }
+      if(hasAdj){
+        rows += blockRow("補償／調整", "—", {contributed:0, redeemed:0, invested:0, cash:0,
+          realized:0, unrealized:0, pnl:p.adj}, {cls:"rowadj"});
+      }
+      rows += blockRow("小計", "—", total, {strong:true, cls:"subtotal"});
+    });
+
+    rows += blockRow("共同池 合計", "100%", poolSums, {name:"全體", rowspan:3, cls:"grandrow"});
+    rows += blockRow("個人池 合計", "100%", soloSums, {cls:"grandrow"});
+    rows += blockRow("總計", "—", sums, {strong:true, cls:"grandrow grandtotal"});
+    el("summaryBody").innerHTML = rows || '<tr><td class="empty" colspan="11">尚無資料</td></tr>';
+
+    var maxAbs = Math.max.apply(null, r.dashboard.map(function(p){ return Math.abs(p.pct); }).concat([0.01]));
+    el("people").innerHTML = r.dashboard.map(function(p){
+      var cls = p.pnl >= 0 ? "pos" : "neg";
+      var labels = esc(p.soloLabels.join("、"));
+      var src = p.soloValue > 0
+        ? "出資：共同池 " + nt(p.poolContributed) + " ＋ " + labels + " " + nt(p.soloContributed) +
+          "<br>市值：共同池 " + nt(p.poolValue) + " ＋ " + labels + " " + nt(p.soloValue)
+        : "全部在共同池";
+      return '<article class="person">' +
+        '<div class="top"><span class="nm">' + esc(p.name) + '</span><span class="sh">共同池持分 ' + (p.ratio*100).toFixed(1) + '%</span></div>' +
+        '<div class="lines">' +
+          '<div class="ln"><span>累計投入</span><b>' + nt(p.contributed) + '</b></div>' +
+          (p.redeemed ? '<div class="ln"><span>累計提領</span><b>' + nt(p.redeemed) + '</b></div>' : '') +
+          '<div class="ln"><span>目前總市值</span><b>' + nt(p.value) + '</b></div>' +
+          '<div class="ln"><span>其中已投入</span><b>' + nt(p.investedPart) + '</b></div>' +
+          '<div class="ln cash"><span>其中未投入現金</span><b>' + nt(p.cashPart) + '</b></div>' +
+        '</div>' +
+        '<div class="result"><span class="amt ' + cls + '">' + (p.pnl>=0?"+":"") + nt(p.pnl) +
+          '</span><span class="chip ' + cls + '">' + pct(p.pct) + '</span></div>' +
+        '<div class="bar"><i style="width:' + Math.min(100, Math.abs(p.pct)/maxAbs*100).toFixed(1) +
+          '%;background:var(--' + (p.pnl>=0?"gain":"loss") + ')"></i></div>' +
+        '<div class="src">' + src + '<br>已實現約 ' + (p.realized>=0?"+":"") + nt(p.realized) +
+          '　未實現約 ' + (p.unrealized>=0?"+":"") + nt(p.unrealized) + '（概算）</div>' +
+      '</article>';
+    }).join("") || '<div class="panel empty">還沒有出資紀錄</div>';
+
+    el("recon").innerHTML =
+      '<div class="item"><div class="k">出資淨額</div><div class="v">' + nt(r.contribNet) + '</div></div>' +
+      '<div class="op">−</div>' +
+      '<div class="item"><div class="k">買進支出</div><div class="v">' + nt(r.boughtNT) + '</div></div>' +
+      '<div class="op">＋</div>' +
+      '<div class="item"><div class="k">賣出回收</div><div class="v">' + nt(r.soldNT) + '</div></div>' +
+      '<div class="op">＝</div>' +
+      '<div class="item total"><div class="k">共同池現金餘額</div><div class="v">' + nt(r.poolCash) + '</div></div>';
+
+    el("flowBody").innerHTML = r.flow.map(function(f){
+      var neg = f.nt < 0;
+      return '<tr><td class="l">' + esc(f.date) + '</td>' +
+        '<td class="l">' + esc(f.what) + '</td>' +
+        '<td class="' + (neg ? "" : "pos") + '">' + (neg ? "−" : "＋") + nt(Math.abs(f.nt)) + '</td>' +
+        '<td style="font-weight:600">' + nt(f.bal) + '</td></tr>';
+    }).join("") || '<tr><td class="empty" colspan="4">尚無資金進出</td></tr>';
+
+    var warn = el("flowWarn");
+    if(r.shortfall < -1){
+      warn.innerHTML = '<div style="margin-top:14px;padding:12px 15px;border:1px solid var(--loss);' +
+        'background:var(--loss-wash);color:var(--loss);border-radius:9px;font-size:12.5px;line-height:1.7">' +
+        '<b>買進金額超出帳上可動用資金 NT$ ' + nt(-r.shortfall) + '。</b>' +
+        '現金不會是負的，所以每個人的「未投入現金」已經以 0 計算——但這表示帳有缺口：' +
+        '可能是有人匯了錢還沒登記出資，或某筆買進的金額填錯。' +
+        '補上那筆出資、或修正買進金額後，這個提醒就會消失。</div>';
+    } else if(r.flow.length && r.lowestBal > 20000){
+      warn.innerHTML = '<div style="margin-top:14px;padding:12px 15px;border:1px solid var(--idle-line);' +
+        'background:var(--idle-wash);color:var(--idle);border-radius:9px;font-size:12.5px;line-height:1.7">' +
+        '<b>帳上現金從未低於 NT$ ' + nt(r.lowestBal) + '。</b>' +
+        '如果實際上這些錢都已經投入部位，代表出資紀錄裡有一筆錢被重複計算了——' +
+        '常見原因是把「賣出回收、又拿去買下一筆」的錢，再登記成一次新的出資。' +
+        '請對照下面的流水找出餘額第一次墊高、之後再也沒降下來的那一筆。</div>';
+    } else warn.innerHTML = "";
+
+    el("buckets").innerHTML = state.buckets.map(function(b){
+      var led = r.bState[b.id] ? r.bState[b.id].ledger : [];
+      var cash = b.id === "pool" ? r.poolCash : (r.solos.filter(function(s){ return s.id === b.id; })[0] || {}).cash;
+      var rows = led.map(function(l){
+        return '<tr><td class="l">' + esc(l.date) + '</td>' +
+          '<td class="l"><span class="tag ' + (l.side==="買"?"buy":"sell") + '">' + l.side + '</span></td>' +
+          '<td>' + d2(l.units) + '</td><td>' + d2(l.amount) + '</td><td>' + d2(l.cumUnits) + '</td>' +
+          '<td>' + d2(l.avgCost) + '</td>' +
+          '<td class="' + (l.realizedPnL>0?"pos":l.realizedPnL<0?"neg":"") + '">' + (l.realizedPnL!=null?d2(l.realizedPnL):"—") + '</td></tr>';
+      }).join("");
+      return '<div style="margin-bottom:16px">' +
+        '<div style="font-weight:700;font-size:13px;margin-bottom:7px">' + esc(b.label) +
+          (b.owner ? '（' + esc(b.owner) + '）' : '（共同持有）') +
+          ' <span style="font-weight:400;color:var(--idle)">· 現金 NT$ ' + nt(cash||0) + '</span></div>' +
+        '<div class="scroll"><table style="min-width:560px"><thead><tr>' +
+          '<th class="l">日期</th><th class="l">別</th><th>單位數</th><th>金額（原幣）</th><th>累計單位</th><th>移動成本</th><th>已實現損益</th>' +
+        '</tr></thead><tbody>' + (rows || '<tr><td class="empty" colspan="7">尚無交易</td></tr>') + '</tbody></table></div></div>';
+    }).join("");
+
+    el("tradeBody").innerHTML = r.tradeRows.slice().sort(byDate).map(function(t){
+      var alloc;
+      if(t.side === "買"){
+        alloc = Object.keys(t.splits || {}).map(function(bid){
+          return esc(bucketLabel(bid)) + " " + nt(t.splits[bid]);
+        }).join("　");
+      } else if(t.side === "轉讓"){
+        alloc = esc(bucketLabel(t.fromBucket)) + " → " + esc(bucketLabel(t.toBucket));
+      } else {
+        var sd = t.sellDetail || {};
+        var parts = Object.keys(sd).filter(function(bid){ return sd[bid].soldUnits > 1e-6; })
+          .map(function(bid){ return esc(bucketLabel(bid)) + " " + d2(sd[bid].soldUnits) + " 單位"; });
+        alloc = (parts.join("　") || '<span style="color:var(--ink-faint)">—</span>') +
+          (t.manualSell
+            ? '<br><span style="color:var(--accent);font-size:10.5px">手動指定</span>'
+            : t.soloFirst
+              ? '<br><span style="color:var(--accent);font-size:10.5px">個人專戶優先</span>'
+              : '<br><span style="color:var(--ink-faint);font-size:10.5px">依持有比例</span>');
+      }
+      var tag = t.side === "買" ? "buy" : t.side === "賣" ? "sell" : "move";
+      var flagged = /待核對/.test(t.note || "");
+      var cls = editing.trade === t.id ? "rowediting" : (flagged ? "rowcheck" : "");
+      return '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td class="l">' + esc(t.date) + '</td>' +
+        '<td class="l"><span class="tag ' + tag + '">' + esc(t.side) + '</span></td>' +
+        '<td>' + d2(t.units) + '</td><td>' + d2(t.price) + '</td>' +
+        '<td>' + (t.fee != null ? d2(t.fee) : "—") + '</td><td>' + d2(t.amount) + '</td>' +
+        '<td class="l" style="font-size:11.5px;white-space:normal;min-width:180px">' + alloc + '</td>' +
+        '<td class="l wrap">' + (flagged ? '<span class="badge-check">待核對</span>' : '') + esc(t.note || "") + '</td>' +
+        '<td style="white-space:nowrap">' +
+          (t.side === "轉讓" ? '' : '<button class="e" data-edit-trade="' + esc(t.id) + '">編輯</button>') +
+          '<button class="x" data-del-trade="' + esc(t.id) + '">刪除</button></td></tr>';
+    }).join("") || '<tr><td class="empty" colspan="9">尚無交易紀錄</td></tr>';
+
+    el("contribBody").innerHTML = state.contribs.slice().sort(byDate).map(function(c){
+      var b = state.buckets.filter(function(x){ return x.id === c.bucket; })[0];
+      var pill = c.bucket === "pool" ? '<span class="tag pool">共同池</span>'
+        : b ? '<span class="tag solo">' + esc(b.label) + '</span>'
+        : '<span class="tag move">未指定</span>';
+      var cflag = /待核對/.test(c.note || "");
+      var ccls = editing.contrib === c.id ? "rowediting" : (cflag ? "rowcheck" : "");
+      return '<tr' + (ccls ? ' class="' + ccls + '"' : '') + '><td class="l">' + esc(c.date) + '</td><td class="l">' + pill + '</td>' +
+        '<td class="l">' + esc(c.name) + '</td><td class="l">' + esc(c.dir) + '</td>' +
+        '<td>' + nt(c.amt) + '</td>' +
+        '<td class="l" style="font-size:11.5px;color:var(--ink-soft)">' + (c.role === "residual" ? "補殘值" : "固定") + '</td>' +
+        '<td class="l wrap">' + (cflag ? '<span class="badge-check">待核對</span>' : '') + esc(c.note || "") + '</td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="e" data-edit-contrib="' + esc(c.id) + '">編輯</button>' +
+          '<button class="x" data-del-contrib="' + esc(c.id) + '">刪除</button></td></tr>';
+    }).join("") || '<tr><td class="empty" colspan="8">尚無出資紀錄</td></tr>';
+
+    var sel = el("cBucket");
+    var keep = sel.value;
+    sel.innerHTML = state.buckets.map(function(b){ return '<option value="' + esc(b.id) + '">' + esc(b.label) + '</option>'; }).join("");
+    if(keep) sel.value = keep;
+
+    /* Rebuild the split inputs only when the bucket list or side actually changes —
+       otherwise another viewer's write would wipe what you are part-way through typing. */
+    var sig = state.buckets.map(function(b){ return b.id + ":" + b.label; }).join("|") + "@" + el("tSide").value;
+    if(sig !== splitSig){ splitSig = sig; renderSplitBox(); }
+  }
+
+  function renderSplitBox(prefill, sellMode){
+    var box = el("splitBox");
+    if(el("tSide").value === "賣"){
+      box.innerHTML = '<div class="cap">這筆賣出的股數怎麼分攤到各戶。若下方任一欄填了單位數，就以手填的為準，忽略上面的分攤方式。</div>' +
+        '<div class="f"><label>分攤方式</label><select id="tSellMode" style="width:auto">' +
+          '<option value="prorata">依賣出當下持有比例分攤</option>' +
+          '<option value="soloFirst">先賣個人專戶，剩餘才算共同池</option>' +
+        '</select></div>' +
+        state.buckets.map(function(b){
+          var v = prefill && prefill[b.id] != null ? prefill[b.id] : "";
+          return '<div class="f"><label>' + esc(b.label) + ' 單位</label>' +
+            '<input type="number" step="0.0001" placeholder="自動" value="' + esc(v) + '" data-sellalloc="' + esc(b.id) + '"></div>';
+        }).join("");
+      el("tSellMode").value = (sellMode === "soloFirst") ? "soloFirst" : "prorata";
+      return;
+    }
+    box.innerHTML = '<div class="cap">這筆買進的錢，各戶各出多少（NT$）。留白直接送出，或按「依規則自動分配」，' +
+        '都會先用完個人專戶的閒置現金（持有比例小的先），再由共同池支應。</div>' +
+      state.buckets.map(function(b){
+        var v = prefill && prefill[b.id] != null ? prefill[b.id] : "";
+        return '<div class="f"><label>' + esc(b.label) + '</label>' +
+          '<input type="number" step="0.01" placeholder="0" value="' + esc(v) + '" data-split="' + esc(b.id) + '"></div>';
+      }).join("") +
+      '<button type="button" id="autoSplitBtn">依規則自動分配</button>';
+    el("autoSplitBtn").addEventListener("click", function(){
+      var totalNT = formTotalNT();
+      if(isNaN(totalNT) || totalNT <= 0){ toast("請先填單位數與單價","warn"); return; }
+      var sp = autoSplit(totalNT, editing.trade);
+      Array.prototype.forEach.call(document.querySelectorAll("[data-split]"), function(inp){
+        var v = sp[inp.getAttribute("data-split")];
+        inp.value = v != null ? v : "";
+      });
+    });
+  }
+
+  /* ---------- persistence ---------- */
+  function setConn(m){
+    mode = m;
+    var pill = el("conn"), txt = el("connTxt");
+    if(m === "snapshot"){ pill.className = "conn live"; txt.textContent = "資料快照"; }
+    else if(m === "live"){ pill.className = "conn live"; txt.textContent = "雲端同步中"; }
+    else if(m === "local"){ pill.className = "conn local"; txt.textContent = "本機儲存"; }
+    else { pill.className = "conn"; txt.textContent = "連線中…"; }
+  }
+  function saveLocal(){
+    if(mode !== "local") return;
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  function loadLocal(){
+    try{
+      var raw = localStorage.getItem(LS_KEY);
+      if(raw){ var s = JSON.parse(raw); if(s && s.buckets) state = s; }
+    }catch(e){}
+    if(!state.buckets.length) state.buckets = [{id:"pool", label:"共同池", owner:null}];
+  }
+  function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+  function addDoc(coll, data){
+    if(db){ db.collection(coll).add(data).catch(function(e){ console.error(e); }); }
+    else { state[coll].push(Object.assign({id:newId()}, data)); saveLocal(); render(); }
+  }
+  function delDoc(coll, id){
+    if(db){
+      db.doc(coll + "/" + id).delete().catch(function(e){
+        console.error(e);
+        toast("刪除失敗：" + (e && e.message ? e.message : "請稍後再試"), "warn");
+      });
+    }
+    else {
+      state[coll] = state[coll].filter(function(x){ return x.id !== id; });
+      saveLocal(); render();
+    }
+  }
+  /* Full replace, so clearing a field (e.g. removing 手續費) actually clears it. */
+  function putDoc(coll, id, data){
+    if(db){ db.doc(coll + "/" + id).set(data).catch(function(e){ console.error(e); toast("儲存失敗，請再試一次","warn"); }); }
+    else {
+      var i = state[coll].findIndex(function(x){ return x.id === id; });
+      if(i > -1) state[coll][i] = Object.assign({id:id}, data);
+      saveLocal(); render();
+    }
+  }
+  function setParams(p){
+    state.params = Object.assign({}, state.params, p);
+    if(db) db.doc("meta/params").set(state.params).catch(function(e){ console.error(e); });
+    else saveLocal();
+    render();
+  }
+
+  function snapList(snap){
+    return snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+  }
+
+  function start(){
+    fetch("data.json?_=" + Date.now(), {cache:"no-store"})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        state.params  = d.params   || state.params;
+        state.buckets = d.buckets  || [];
+        state.trades  = d.trades   || [];
+        state.contribs= d.contribs || [];
+        setConn("snapshot");
+        render();
+      })
+      .catch(function(e){
+        console.error("data.json 讀取失敗", e);
+        setConn("local"); loadLocal(); render();
+      });
+    return;
+    /* 以下為 Artifact 版的雲端同步路徑，靜態版用不到 */
+    if(!window.claude || typeof window.claude.use !== "function"){
+      setConn("local"); loadLocal(); render(); return;
+    }
+    var settled = false;
+    setTimeout(function(){
+      if(!settled){ settled = true; setConn("local"); loadLocal(); render(); }
+    }, 11000);
+
+    window.claude.use("db").then(function(ns){
+      if(settled) return;
+      settled = true;
+      if(!ns){ setConn("local"); loadLocal(); render(); return; }
+      db = ns;
+      setConn("live");
+      db.doc("meta/params").onSnapshot(function(s){
+        if(s.exists) state.params = s.data();
+        render();
+      }, function(e){ console.error(e); });
+      db.collection("buckets").onSnapshot(function(s){ state.buckets = snapList(s); render(); }, function(e){ console.error(e); });
+      db.collection("trades").onSnapshot(function(s){ state.trades = snapList(s); render(); }, function(e){ console.error(e); });
+      db.collection("contribs").onSnapshot(function(s){ state.contribs = snapList(s); render(); }, function(e){ console.error(e); });
+    }).catch(function(e){
+      console.error(e);
+      if(!settled){ settled = true; setConn("local"); loadLocal(); render(); }
+    });
+  }
+
+  /* ---------- events ---------- */
+  el("pPrice").addEventListener("change", function(e){ setParams({price: parseFloat(e.target.value) || 0}); });
+  el("pFx").addEventListener("change", function(e){ setParams({fx: parseFloat(e.target.value) || 0}); });
+  el("pUpdated").addEventListener("change", function(e){ setParams({updated: e.target.value}); });
+  el("pSellFrom").addEventListener("change", function(e){ setParams({policySellFrom: e.target.value}); });
+  el("pBuyFrom").addEventListener("change", function(e){ setParams({policyBuyFrom: e.target.value}); });
+  el("pBuyMode").addEventListener("change", function(e){ setParams({policyBuyMode: e.target.value}); });
+  el("pSellMode").addEventListener("change", function(e){ setParams({policySellMode: e.target.value}); });
+  el("tSide").addEventListener("change", function(){ renderSplitBox(); });
+
+  function resetTradeForm(){
+    editing.trade = null;
+    ["tUnits","tPrice","tAmt","tNote"].forEach(function(id){ el(id).value = ""; });
+    el("tFee").value = 0;
+    el("addTradeBtn").textContent = "新增交易";
+    el("cancelTradeBtn").hidden = true;
+    el("tradeEditing").hidden = true;
+    renderSplitBox();
+    render();
+  }
+  function resetContribForm(){
+    editing.contrib = null;
+    ["cName","cAmt","cNote"].forEach(function(id){ el(id).value = ""; });
+    el("addContribBtn").textContent = "新增出資";
+    el("cancelContribBtn").hidden = true;
+    el("contribEditing").hidden = true;
+    render();
+  }
+
+  function readTradeForm(){
+    var date = el("tDate").value, side = el("tSide").value;
+    var units = parseFloat(el("tUnits").value), price = parseFloat(el("tPrice").value);
+    var fee = parseFloat(el("tFee").value) || 0;
+    var amtRaw = el("tAmt").value;
+    if(!date || isNaN(units) || isNaN(price)){ toast("請至少填日期、單位數、單價","warn"); return null; }
+    var t = {date:date, side:side, units:units, price:price, fee:fee,
+      amt: amtRaw === "" ? null : parseFloat(amtRaw), note: el("tNote").value.trim()};
+    if(side === "賣"){
+      var modeEl = el("tSellMode");
+      t.sellMode = modeEl && modeEl.value === "soloFirst" ? "soloFirst" : "prorata";
+      var sa = {};
+      Array.prototype.forEach.call(document.querySelectorAll("[data-sellalloc]"), function(inp){
+        var v = parseFloat(inp.value);
+        if(v > 0) sa[inp.getAttribute("data-sellalloc")] = v;
+      });
+      t.sellAlloc = Object.keys(sa).length ? sa : null;
+    }
+    if(side === "買"){
+      var splits = {};
+      Array.prototype.forEach.call(document.querySelectorAll("[data-split]"), function(inp){
+        var v = parseFloat(inp.value);
+        if(v > 0) splits[inp.getAttribute("data-split")] = v;
+      });
+      if(!Object.keys(splits).length){
+        splits = autoSplit((t.amt != null ? t.amt : (units*price + fee)) * (Number(state.params.fx) || 0), editing.trade);
+      }
+      t.splits = splits;
+    }
+    return t;
+  }
+
+  el("addTradeBtn").addEventListener("click", function(){
+    var t = readTradeForm();
+    if(!t) return;
+    if(editing.trade) putDoc("trades", editing.trade, t);
+    else addDoc("trades", t);
+    resetTradeForm();
+  });
+  el("cancelTradeBtn").addEventListener("click", resetTradeForm);
+
+  el("addContribBtn").addEventListener("click", function(){
+    var date = el("cDate").value, name = el("cName").value.trim(), amt = parseFloat(el("cAmt").value);
+    if(!date || !name || isNaN(amt)){ toast("請至少填日期、姓名、金額","warn"); return; }
+    var c = {date:date, bucket: el("cBucket").value, name:name, dir: el("cDir").value,
+      amt:amt, role: el("cRole").value, note: el("cNote").value.trim()};
+    if(editing.contrib) putDoc("contribs", editing.contrib, c);
+    else addDoc("contribs", c);
+    resetContribForm();
+  });
+  el("cancelContribBtn").addEventListener("click", resetContribForm);
+
+  function startEditTrade(id){
+    var t = state.trades.filter(function(x){ return x.id === id; })[0];
+    if(!t) return;
+    editing.trade = id;
+    el("tDate").value = t.date || "";
+    el("tSide").value = t.side;
+    el("tUnits").value = t.units;
+    el("tPrice").value = t.price;
+    el("tFee").value = t.fee != null ? t.fee : 0;
+    el("tAmt").value = t.amt != null ? t.amt : "";
+    el("tNote").value = t.note || "";
+    splitSig = "";
+    renderSplitBox(t.side === "賣" ? t.sellAlloc : t.splits, t.sellMode);
+    el("addTradeBtn").textContent = "儲存變更";
+    el("cancelTradeBtn").hidden = false;
+    el("tradeEditing").hidden = false;
+    el("tradeEditing").textContent = "正在編輯 " + t.date + " 的 " + t.side + "單";
+    render();
+    el("tDate").scrollIntoView({behavior:"smooth", block:"center"});
+  }
+
+  function startEditContrib(id){
+    var c = state.contribs.filter(function(x){ return x.id === id; })[0];
+    if(!c) return;
+    editing.contrib = id;
+    el("cDate").value = c.date || "";
+    el("cBucket").value = c.bucket || "pool";
+    el("cName").value = c.name || "";
+    el("cDir").value = c.dir || "存入";
+    el("cAmt").value = c.amt;
+    el("cRole").value = c.role === "residual" ? "residual" : "fixed";
+    el("cNote").value = c.note || "";
+    el("addContribBtn").textContent = "儲存變更";
+    el("cancelContribBtn").hidden = false;
+    el("contribEditing").hidden = false;
+    el("contribEditing").textContent = "正在編輯 " + c.date + " " + c.name + " 的紀錄";
+    render();
+    el("cDate").scrollIntoView({behavior:"smooth", block:"center"});
+  }
+
+  el("addBucketBtn").addEventListener("click", function(){
+    var label = el("bLabel").value.trim(), owner = el("bOwner").value.trim();
+    if(!label || !owner){ toast("請填戶名稱與擁有人","warn"); return; }
+    if(db){
+      db.doc("buckets/solo_" + Date.now().toString(36)).set({label:label, owner:owner})
+        .catch(function(e){ console.error(e); });
+    } else {
+      state.buckets.push({id:"solo_" + newId(), label:label, owner:owner});
+      saveLocal(); render();
+    }
+    el("bLabel").value = ""; el("bOwner").value = "";
+  });
+
+  var armedTimer = null;
+  function disarmAll(){
+    clearTimeout(armedTimer);
+    Array.prototype.forEach.call(document.querySelectorAll("button.x.armed"), function(b){
+      b.dataset.armed = ""; b.textContent = "刪除"; b.classList.remove("armed");
+    });
+  }
+
+  document.addEventListener("click", function(e){
+    var g = function(a){ return e.target.getAttribute && e.target.getAttribute(a); };
+    var delT = g("data-del-trade"), delC = g("data-del-contrib");
+    var edT = g("data-edit-trade"), edC = g("data-edit-contrib");
+    if(edT) startEditTrade(edT);
+    else if(edC) startEditContrib(edC);
+    else if(delT || delC){
+      var coll = delT ? "trades" : "contribs";
+      var id = delT || delC;
+      var btn = e.target;
+      if(btn.dataset.armed === "1"){
+        if(delT && editing.trade === delT) resetTradeForm();
+        if(delC && editing.contrib === delC) resetContribForm();
+        delDoc(coll, id);
+        toast("已刪除，數字已重算", "ok");
+        return;
+      }
+      disarmAll();
+      btn.dataset.armed = "1";
+      btn.textContent = "確定刪除";
+      btn.classList.add("armed");
+      toast("再按一次「確定刪除」就會刪掉這筆，4 秒內未確認會自動取消。");
+      armedTimer = setTimeout(disarmAll, 4000);
+    }
+  });
+
+  var EDIT = /(?:^|[?&])edit=1(?:&|$)/.test(location.search);
+  if(!EDIT) document.body.classList.add("ro");
+  var rn = el("roNote");
+  if(rn) rn.textContent = EDIT
+    ? "編輯模式：改動只存在這個瀏覽器分頁，重新整理就會回到快照。"
+    : "唯讀檢視。";
+
+  render();
+  start();
+})();
+</script>
+
+</body>
+</html>
