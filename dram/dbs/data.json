@@ -57,21 +57,6 @@
    "note": "DBS 對帳單"
   },
   {
-   "id": "z01",
-   "date": "2026-06-08",
-   "side": "買",
-   "units": 100,
-   "price": 60.85,
-   "fee": 0,
-   "amt": 6085,
-   "account": "main",
-   "splits": {
-    "solo_mu32myei": 191677.5
-   },
-   "splitsManual": true,
-   "note": "DBS-Z 帳戶（LoChunF）實際成交，已併入張芳個人池。手動指定，勿按自動分配"
-  },
-  {
    "id": "t04",
    "date": "2026-06-16",
    "side": "賣",
@@ -227,16 +212,6 @@
    "amt": 60000,
    "role": "fixed",
    "note": "第一波同批"
-  },
-  {
-   "id": "c10",
-   "date": "2026-06-08",
-   "bucket": "solo_mu32myei",
-   "name": "張芳",
-   "dir": "存入",
-   "amt": 191677.5,
-   "role": "residual",
-   "note": "DBS-Z 6/8 買進（暫以成本帶入，待核對實際匯款）"
   },
   {
    "id": "c08",
