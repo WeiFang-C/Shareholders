@@ -1,294 +1,332 @@
 {
-  "generatedAt": "2026-09-21T17:01:15+00:00",
-  "params": {
-    "fx": 31.5,
-    "price": 62,
-    "updated": "2026-09-21"
+ "params": {
+  "price": 62.88,
+  "fx": 31.5,
+  "updated": "2026-09-22",
+  "policySellFrom": "2026-07-14",
+  "policyBuyFrom": "2026-09-03",
+  "policyBuyMode": "proRataCash",
+  "policySellMode": "prorata"
+ },
+ "buckets": [
+  {
+   "id": "pool",
+   "label": "共同池",
+   "owner": null
   },
-  "buckets": [
-    {
-      "label": "張波個人",
-      "owner": "張波",
-      "id": "bo_solo"
-    },
-    {
-      "label": "共同池",
-      "owner": null,
-      "id": "pool"
-    },
-    {
-      "label": "張芳個人",
-      "owner": "張芳",
-      "id": "solo_mu32myei"
-    }
-  ],
-  "trades": [
-    {
-      "amt": 1500,
-      "date": "2026-05-27",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 60,
-      "side": "買",
-      "units": 25,
-      "id": "t01"
-    },
-    {
-      "amt": 3308,
-      "date": "2026-06-01",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 66.16,
-      "side": "買",
-      "units": 50,
-      "id": "t02"
-    },
-    {
-      "amt": 2142,
-      "date": "2026-06-05",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 59.5,
-      "side": "買",
-      "units": 36,
-      "id": "t03"
-    },
-    {
-      "amt": 2153.03,
-      "date": "2026-06-16",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 70.3021,
-      "sellAlloc": null,
-      "sellMode": "prorata",
-      "side": "賣",
-      "units": 31,
-      "id": "t04"
-    },
-    {
-      "amt": 3777.74,
-      "date": "2026-06-18",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 76.1,
-      "side": "賣",
-      "units": 50,
-      "id": "t05"
-    },
-    {
-      "amt": 5602.5,
-      "date": "2026-06-25",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 74.7,
-      "side": "買",
-      "units": 75,
-      "id": "t06"
-    },
-    {
-      "amt": 3045.6,
-      "date": "2026-07-01",
-      "fee": 0,
-      "note": "DBS 對帳單。張芳個人全額出資（非三人共同決議）。手動指定，勿按自動分配",
-      "price": 67.68,
-      "side": "買",
-      "splits": {
-        "solo_mu32myei": 95936.4
-      },
-      "splitsManual": true,
-      "units": 45,
-      "id": "t07"
-    },
-    {
-      "amt": 4659.65,
-      "date": "2026-07-13",
-      "fee": 0,
-      "note": "DBS 對帳單。共同池已空，全額由張芳個人出資",
-      "price": 58.2456,
-      "side": "買",
-      "splits": {
-        "solo_mu32myei": 146778.98
-      },
-      "splitsManual": true,
-      "units": 80,
-      "id": "t08"
-    },
-    {
-      "amt": 3048.78,
-      "date": "2026-07-14",
-      "fee": 0,
-      "note": "DBS 對帳單。當時全部單位都在共同池",
-      "price": 61.5,
-      "side": "賣",
-      "units": 50,
-      "id": "t09"
-    },
-    {
-      "amt": 5650,
-      "date": "2026-07-15",
-      "fee": 0,
-      "note": "DBS 對帳單。張波個人 40,000（7/14 匯入）＋ 張芳個人 137,975，張倫未出資",
-      "price": 56.5,
-      "side": "買",
-      "splits": {
-        "bo_solo": 40000,
-        "solo_mu32myei": 137975
-      },
-      "splitsManual": true,
-      "units": 100,
-      "id": "t10"
-    },
-    {
-      "amt": 5470,
-      "date": "2026-09-03",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 54.7,
-      "side": "買",
-      "units": 100,
-      "id": "t11"
-    },
-    {
-      "amt": 4973.65,
-      "date": "2026-09-09",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 62.5,
-      "side": "賣",
-      "units": 80,
-      "id": "t12"
-    },
-    {
-      "amt": 5005,
-      "date": "2026-09-14",
-      "fee": 0,
-      "note": "DBS 對帳單",
-      "price": 55,
-      "side": "買",
-      "units": 91,
-      "id": "t13"
-    }
-  ],
-  "contribs": [
-    {
-      "amt": 9433,
-      "bucket": "pool",
-      "date": "2026-09-21",
-      "dir": "補償收",
-      "name": "張波",
-      "note": "6/25 買進 75 單位 @74.70 為張芳個人決策、非三人共同決議，由張芳補償。基準市價 US$61.5，金額鎖定不再隨價格調整",
-      "role": "fixed",
-      "id": "adj_bo"
-    },
-    {
-      "amt": 18866,
-      "bucket": "pool",
-      "date": "2026-09-21",
-      "dir": "補償付",
-      "name": "張芳",
-      "note": "支付給張波、5倫各 9,433：6/25 個人決策的損失承擔",
-      "role": "fixed",
-      "id": "adj_fang"
-    },
-    {
-      "amt": 9433,
-      "bucket": "pool",
-      "date": "2026-09-21",
-      "dir": "補償收",
-      "name": "張倫",
-      "note": "6/25 買進 75 單位 @74.70 為張芳個人決策、非三人共同決議，由張芳補償。基準市價 US$61.5，金額鎖定不再隨價格調整",
-      "role": "fixed",
-      "id": "adj_lun"
-    },
-    {
-      "amt": 98925,
-      "bucket": "pool",
-      "date": "2026-05-27",
-      "dir": "存入",
-      "name": "張芳",
-      "note": "三人共同那一批的出資：剛好支應 5/27、6/1、6/5 三筆買進（6/5 買完池內現金歸零）",
-      "role": "fixed",
-      "id": "c01"
-    },
-    {
-      "amt": 60000,
-      "bucket": "pool",
-      "date": "2026-05-27",
-      "dir": "存入",
-      "name": "張波",
-      "note": "第一波同批",
-      "role": "fixed",
-      "id": "c02"
-    },
-    {
-      "amt": 60000,
-      "bucket": "pool",
-      "date": "2026-05-27",
-      "dir": "存入",
-      "name": "張倫",
-      "note": "第一波同批",
-      "role": "fixed",
-      "id": "c03"
-    },
-    {
-      "amt": 137975,
-      "bucket": "solo_mu32myei",
-      "date": "2026-07-15",
-      "dir": "存入",
-      "name": "張芳",
-      "note": "7/15 總額 177,975 扣張波 40,000。全部是新匯的錢，不動用池子 7/14 賣出的回收款",
-      "role": "fixed",
-      "id": "c04"
-    },
-    {
-      "amt": 40000,
-      "bucket": "bo_solo",
-      "date": "2026-07-14",
-      "dir": "存入",
-      "name": "張波",
-      "note": "7/14 匯入個人專戶，7/15 買進用掛",
-      "role": "fixed",
-      "id": "c05"
-    },
-    {
-      "amt": 40000,
-      "bucket": "pool",
-      "date": "2026-09-03",
-      "dir": "存入",
-      "name": "張倫",
-      "note": "第三波新匯款",
-      "role": "fixed",
-      "id": "c06"
-    },
-    {
-      "amt": 40000,
-      "bucket": "pool",
-      "date": "2026-09-03",
-      "dir": "存入",
-      "name": "張波",
-      "note": "第三波新匯款",
-      "role": "fixed",
-      "id": "c07"
-    },
-    {
-      "amt": 95936.4,
-      "bucket": "solo_mu32myei",
-      "date": "2026-07-01",
-      "dir": "存入",
-      "name": "張芳",
-      "note": "7/1 買進全額，張芳個人追加",
-      "role": "fixed",
-      "id": "c08"
-    },
-    {
-      "amt": 146778.98,
-      "bucket": "solo_mu32myei",
-      "date": "2026-07-13",
-      "dir": "存入",
-      "name": "張芳",
-      "note": "7/13 買進全額，共同池已無現金",
-      "role": "fixed",
-      "id": "c09"
-    }
-  ]
+  {
+   "id": "bo_solo",
+   "label": "張波個人",
+   "owner": "張波"
+  },
+  {
+   "id": "solo_mu32myei",
+   "label": "張芳個人",
+   "owner": "張芳"
+  }
+ ],
+ "trades": [
+  {
+   "id": "t01",
+   "date": "2026-05-27",
+   "side": "買",
+   "units": 25,
+   "price": 60,
+   "fee": 0,
+   "amt": 1500,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t02",
+   "date": "2026-06-01",
+   "side": "買",
+   "units": 50,
+   "price": 66.16,
+   "fee": 0,
+   "amt": 3308,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t03",
+   "date": "2026-06-05",
+   "side": "買",
+   "units": 36,
+   "price": 59.5,
+   "fee": 0,
+   "amt": 2142,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "z01",
+   "date": "2026-06-08",
+   "side": "買",
+   "units": 100,
+   "price": 60.85,
+   "fee": 0,
+   "amt": 6085,
+   "account": "main",
+   "splits": {
+    "solo_mu32myei": 191677.5
+   },
+   "splitsManual": true,
+   "note": "DBS-Z 帳戶（LoChunF）實際成交，已併入張芳個人池。手動指定，勿按自動分配"
+  },
+  {
+   "id": "t04",
+   "date": "2026-06-16",
+   "side": "賣",
+   "units": 31,
+   "price": 70.3021,
+   "fee": 0,
+   "amt": 2153.03,
+   "sellMode": "prorata",
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t05",
+   "date": "2026-06-18",
+   "side": "賣",
+   "units": 50,
+   "price": 76.1,
+   "fee": 0,
+   "amt": 3777.74,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t06",
+   "date": "2026-06-25",
+   "side": "買",
+   "units": 75,
+   "price": 74.7,
+   "fee": 0,
+   "amt": 5602.5,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t07",
+   "date": "2026-07-01",
+   "side": "買",
+   "units": 45,
+   "price": 67.68,
+   "fee": 0,
+   "amt": 3045.6,
+   "splits": {
+    "solo_mu32myei": 95936.4
+   },
+   "splitsManual": true,
+   "note": "DBS 對帳單。張芳個人全額出資（非三人共同決議）。手動指定，勿按自動分配"
+  },
+  {
+   "id": "t08",
+   "date": "2026-07-13",
+   "side": "買",
+   "units": 80,
+   "price": 58.2456,
+   "fee": 0,
+   "amt": 4659.65,
+   "splits": {
+    "solo_mu32myei": 146778.98
+   },
+   "splitsManual": true,
+   "note": "DBS 對帳單。共同池已空，全額由張芳個人出資"
+  },
+  {
+   "id": "t09",
+   "date": "2026-07-14",
+   "side": "賣",
+   "units": 50,
+   "price": 61.5,
+   "fee": 0,
+   "amt": 3048.78,
+   "note": "DBS 對帳單。當時全部單位都在共同池"
+  },
+  {
+   "id": "t10",
+   "date": "2026-07-15",
+   "side": "買",
+   "units": 100,
+   "price": 56.5,
+   "fee": 0,
+   "amt": 5650,
+   "splits": {
+    "bo_solo": 40000,
+    "solo_mu32myei": 137975
+   },
+   "splitsManual": true,
+   "note": "DBS 對帳單。張波個人 40,000（7/14 匯入）＋ 張芳個人 137,975，張倫未出資"
+  },
+  {
+   "id": "t11",
+   "date": "2026-09-03",
+   "side": "買",
+   "units": 100,
+   "price": 54.7,
+   "fee": 0,
+   "amt": 5470,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t12",
+   "date": "2026-09-09",
+   "side": "賣",
+   "units": 80,
+   "price": 62.5,
+   "fee": 0,
+   "amt": 4973.65,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "t13",
+   "date": "2026-09-14",
+   "side": "買",
+   "units": 91,
+   "price": 55,
+   "fee": 0,
+   "amt": 5005,
+   "note": "DBS 對帳單"
+  },
+  {
+   "id": "igtu3pu3l4whnipr9udh",
+   "date": "2026-09-22",
+   "side": "賣",
+   "units": 100,
+   "price": 63,
+   "fee": 54.4,
+   "amt": null,
+   "sellMode": "prorata",
+   "note": ""
+  }
+ ],
+ "contribs": [
+  {
+   "id": "c01",
+   "date": "2026-05-27",
+   "bucket": "pool",
+   "name": "張芳",
+   "dir": "存入",
+   "amt": 98925,
+   "role": "fixed",
+   "note": "三人共同那一批的出資：剛好支應 5/27、6/1、6/5 三筆買進（6/5 買完池內現金歸零）"
+  },
+  {
+   "id": "c02",
+   "date": "2026-05-27",
+   "bucket": "pool",
+   "name": "張波",
+   "dir": "存入",
+   "amt": 60000,
+   "role": "fixed",
+   "note": "第一波同批"
+  },
+  {
+   "id": "c03",
+   "date": "2026-05-27",
+   "bucket": "pool",
+   "name": "張倫",
+   "dir": "存入",
+   "amt": 60000,
+   "role": "fixed",
+   "note": "第一波同批"
+  },
+  {
+   "id": "c10",
+   "date": "2026-06-08",
+   "bucket": "solo_mu32myei",
+   "name": "張芳",
+   "dir": "存入",
+   "amt": 191677.5,
+   "role": "residual",
+   "note": "DBS-Z 6/8 買進（暫以成本帶入，待核對實際匯款）"
+  },
+  {
+   "id": "c08",
+   "date": "2026-07-01",
+   "bucket": "solo_mu32myei",
+   "name": "張芳",
+   "dir": "存入",
+   "amt": 95936.4,
+   "role": "fixed",
+   "note": "7/1 買進全額，張芳個人追加"
+  },
+  {
+   "id": "c09",
+   "date": "2026-07-13",
+   "bucket": "solo_mu32myei",
+   "name": "張芳",
+   "dir": "存入",
+   "amt": 146778.98,
+   "role": "fixed",
+   "note": "7/13 買進全額，共同池已無現金"
+  },
+  {
+   "id": "c05",
+   "date": "2026-07-14",
+   "bucket": "bo_solo",
+   "name": "張波",
+   "dir": "存入",
+   "amt": 40000,
+   "role": "fixed",
+   "note": "7/14 匯入個人專戶，7/15 買進用掉"
+  },
+  {
+   "id": "c04",
+   "date": "2026-07-15",
+   "bucket": "solo_mu32myei",
+   "name": "張芳",
+   "dir": "存入",
+   "amt": 137975,
+   "role": "fixed",
+   "note": "7/15 總額 177,975 扣張波 40,000。全部是新匯的錢，不動用池子 7/14 賣出的回收款"
+  },
+  {
+   "id": "c06",
+   "date": "2026-09-03",
+   "bucket": "pool",
+   "name": "張倫",
+   "dir": "存入",
+   "amt": 40000,
+   "role": "fixed",
+   "note": "第三波新匯款"
+  },
+  {
+   "id": "c07",
+   "date": "2026-09-03",
+   "bucket": "pool",
+   "name": "張波",
+   "dir": "存入",
+   "amt": 40000,
+   "role": "fixed",
+   "note": "第三波新匯款"
+  },
+  {
+   "id": "adj_fang",
+   "date": "2026-09-21",
+   "bucket": "pool",
+   "name": "張芳",
+   "dir": "補償付",
+   "amt": 18866,
+   "role": "fixed",
+   "note": "支付給張波、張倫各 9,433：6/25 個人決策的損失承擔"
+  },
+  {
+   "id": "adj_bo",
+   "date": "2026-09-21",
+   "bucket": "pool",
+   "name": "張波",
+   "dir": "補償收",
+   "amt": 9433,
+   "role": "fixed",
+   "note": "6/25 買進 75 單位 @74.70 為張芳個人決策、非三人共同決議，由張芳補償。基準市價 US$61.5，金額鎖定不再隨價格調整"
+  },
+  {
+   "id": "adj_lun",
+   "date": "2026-09-21",
+   "bucket": "pool",
+   "name": "張倫",
+   "dir": "補償收",
+   "amt": 9433,
+   "role": "fixed",
+   "note": "6/25 買進 75 單位 @74.70 為張芳個人決策、非三人共同決議，由張芳補償。基準市價 US$61.5，金額鎖定不再隨價格調整"
+  }
+ ]
 }

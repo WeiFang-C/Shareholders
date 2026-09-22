@@ -328,7 +328,7 @@
     <div class="scroll">
       <table>
         <thead><tr>
-          <th class="l">日期</th><th class="l">別</th><th>單位數</th><th>單價</th><th>手續費</th><th>金額（原幣）</th>
+          <th class="l">日期</th><th class="l">別</th><th class="l">帳戶</th><th>單位數</th><th>單價</th><th>手續費</th><th>金額（原幣）</th>
           <th class="l">資金分配</th><th class="l">備註</th><th></th>
         </tr></thead>
         <tbody id="tradeBody"></tbody>
@@ -341,6 +341,7 @@
       <div class="f"><label>單價</label><input type="number" id="tPrice" step="0.01"></div>
       <div class="f"><label>手續費</label><input type="number" id="tFee" step="0.01" value="0"></div>
       <div class="f"><label>金額（可留空）</label><input type="number" id="tAmt" step="0.01"></div>
+      <div class="f"><label>券商帳戶</label><input type="text" id="tAcct" placeholder="main"></div>
       <div class="f"><label>備註</label><input type="text" id="tNote" class="wide"></div>
     </div>
     <div class="splitbox" id="splitBox"></div>
@@ -383,6 +384,7 @@
     <div class="form">
       <div class="f"><label>戶名稱</label><input type="text" id="bLabel" placeholder="例：張倫個人"></div>
       <div class="f"><label>擁有人</label><input type="text" id="bOwner"></div>
+      <div class="f"><label>券商帳戶</label><input type="text" id="bAcct" placeholder="main"></div>
       <button class="go" id="addBucketBtn">新增專戶</button>
     </div>
   </section>
@@ -440,6 +442,18 @@
     var price = Number(state.params.price) || 0;
     var trades = state.trades.slice().sort(byDate);
     var bucketIds = state.buckets.map(function(b){ return b.id; });
+    /* 券商帳戶：不同帳戶的部位不能互相分攤。沒填的一律視為 main。 */
+    function acctOfBucket(id){
+      var b = state.buckets.filter(function(x){ return x.id === id; })[0];
+      return (b && b.account) ? b.account : "main";
+    }
+    function idsOfAcct(a){
+      return bucketIds.filter(function(id){ return acctOfBucket(id) === a; });
+    }
+    /* 該帳戶的「兜底戶」：有 pool 就用 pool，否則用該帳戶的第一個戶。 */
+    function fallbackOf(ids){
+      return ids.indexOf("pool") > -1 ? "pool" : (ids[0] || "pool");
+    }
 
     var bState = {};
     bucketIds.forEach(function(id){ bState[id] = { units:0, avgCost:0, ledger:[], cashRun:0 }; });
@@ -468,8 +482,8 @@
       }
     }
     /* 個人專戶優先，持有少的先，共同池永遠最後。 */
-    function payOrder(){
-      return bucketIds.slice().sort(function(a,b){
+    function payOrder(ids){
+      return (ids || bucketIds).slice().sort(function(a,b){
         if(a === "pool") return 1;
         if(b === "pool") return -1;
         return bState[a].units - bState[b].units;
@@ -478,6 +492,10 @@
 
     trades.forEach(function(t){
       cashUpTo(t.date);
+      var acct = t.account || "main";
+      var aIds = idsOfAcct(acct);
+      if(!aIds.length) aIds = bucketIds;
+      var aFallback = fallbackOf(aIds);
       if(t.side === "轉讓"){
         var from = bState[t.fromBucket], to = bState[t.toBucket];
         if(!from || !to){ tradeRows.push(Object.assign({}, t, {amount:0})); return; }
@@ -510,23 +528,23 @@
           if(buyMode === "priority"){
             /* 優先序：先用完個人專戶的閒置現金，剩下的才由共同池支應。
                會讓有專戶的人插隊拿到每一個好價格，分潤並不中性。 */
-            payOrder().forEach(function(bid){
-              if(leftNT <= 0.5 || bid === "pool") return;
+            payOrder(aIds).forEach(function(bid){
+              if(leftNT <= 0.5 || bid === aFallback) return;
               var avail = bState[bid].cashRun;
               if(avail <= 0.5) return;
               var take = Math.min(avail, leftNT);
               splits[bid] = take; leftNT -= take;
             });
-            if(leftNT > 0.5) splits.pool = leftNT;
+            if(leftNT > 0.5) splits[aFallback] = leftNT;
           } else {
             /* 按現金比例：用帳上現金買進時，各戶依「當下可動用現金」等比例出錢，
                誰也不插隊——報酬才會反映各自的錢實際在市場裡待多久。
                現金等比例消耗，所以也不會有哪一戶留下尾數。 */
             var poolCash0 = 0;
-            bucketIds.forEach(function(bid){ poolCash0 += Math.max(0, bState[bid].cashRun); });
+            aIds.forEach(function(bid){ poolCash0 += Math.max(0, bState[bid].cashRun); });
             if(poolCash0 > 0.5){
               var used = 0;
-              bucketIds.forEach(function(bid){
+              aIds.forEach(function(bid){
                 var avail = Math.max(0, bState[bid].cashRun);
                 if(avail <= 0) return;
                 var take = Math.min(leftNT * (avail / poolCash0), avail);
@@ -534,10 +552,11 @@
               });
               leftNT -= used;
             }
-            if(leftNT > 0.5) splits.pool = (splits.pool || 0) + leftNT;
+            if(leftNT > 0.5) splits[aFallback] = (splits[aFallback] || 0) + leftNT;
           }
         } else {
-          splits = t.splits || {pool: totalNT};
+          splits = t.splits || {};
+          if(!Object.keys(splits).length) splits[aFallback] = totalNT;
           var sumNT = 0;
           Object.keys(splits).forEach(function(k){ sumNT += Number(splits[k]) || 0; });
           if(sumNT) totalNT = sumNT;
@@ -556,7 +575,7 @@
         });
         tradeRows.push(Object.assign({}, t, {amount:total, splits:splits}));
       } else {
-        var all = bucketIds.reduce(function(s,id){ return s + bState[id].units; }, 0);
+        var all = aIds.reduce(function(s,id){ return s + bState[id].units; }, 0);
         var alloc = {};
         var manual = t.sellAlloc && Object.keys(t.sellAlloc).some(function(k){ return Number(t.sellAlloc[k]) > 0; });
         var soloFirst = !manual && (t.sellMode === "soloFirst" ||
@@ -569,16 +588,16 @@
           });
         } else if(soloFirst){
           /* 先賣個人專戶（持有少的先），剩餘才動共同池。 */
-          var order = payOrder();
+          var order = payOrder(aIds);
           var left = t.units;
           order.forEach(function(bid){
             if(left <= 1e-9) return;
             var take = Math.min(bState[bid].units, left);
             if(take > 1e-9){ alloc[bid] = take; left -= take; }
           });
-          if(left > 1e-9) alloc.pool = (alloc.pool || 0) + left;
+          if(left > 1e-9) alloc[aFallback] = (alloc[aFallback] || 0) + left;
         } else {
-          bucketIds.forEach(function(bid){
+          aIds.forEach(function(bid){
             if(bState[bid].units <= 0 || all <= 0) return;
             alloc[bid] = t.units * (bState[bid].units / all);
           });
@@ -999,6 +1018,7 @@
       return '<div style="margin-bottom:16px">' +
         '<div style="font-weight:700;font-size:13px;margin-bottom:7px">' + esc(b.label) +
           (b.owner ? '（' + esc(b.owner) + '）' : '（共同持有）') +
+          ' <span style="font-weight:400;font-size:11px;color:var(--ink-faint)">· 帳戶 ' + esc(b.account || "main") + '</span>' +
           ' <span style="font-weight:400;color:var(--idle)">· 現金 NT$ ' + nt(cash||0) + '</span></div>' +
         '<div class="scroll"><table style="min-width:560px"><thead><tr>' +
           '<th class="l">日期</th><th class="l">別</th><th>單位數</th><th>金額（原幣）</th><th>累計單位</th><th>移動成本</th><th>已實現損益</th>' +
@@ -1029,6 +1049,7 @@
       var cls = editing.trade === t.id ? "rowediting" : (flagged ? "rowcheck" : "");
       return '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td class="l">' + esc(t.date) + '</td>' +
         '<td class="l"><span class="tag ' + tag + '">' + esc(t.side) + '</span></td>' +
+        '<td class="l" style="font-size:11px;color:var(--ink-soft)">' + esc(t.account || "main") + '</td>' +
         '<td>' + d2(t.units) + '</td><td>' + d2(t.price) + '</td>' +
         '<td>' + (t.fee != null ? d2(t.fee) : "—") + '</td><td>' + d2(t.amount) + '</td>' +
         '<td class="l" style="font-size:11.5px;white-space:normal;min-width:180px">' + alloc + '</td>' +
@@ -1036,7 +1057,7 @@
         '<td style="white-space:nowrap">' +
           (t.side === "轉讓" ? '' : '<button class="e" data-edit-trade="' + esc(t.id) + '">編輯</button>') +
           '<button class="x" data-del-trade="' + esc(t.id) + '">刪除</button></td></tr>';
-    }).join("") || '<tr><td class="empty" colspan="9">尚無交易紀錄</td></tr>';
+    }).join("") || '<tr><td class="empty" colspan="10">尚無交易紀錄</td></tr>';
 
     el("contribBody").innerHTML = state.contribs.slice().sort(byDate).map(function(c){
       var b = state.buckets.filter(function(x){ return x.id === c.bucket; })[0];
@@ -1216,6 +1237,7 @@
   function resetTradeForm(){
     editing.trade = null;
     ["tUnits","tPrice","tAmt","tNote"].forEach(function(id){ el(id).value = ""; });
+    el("tAcct").value = "";
     el("tFee").value = 0;
     el("addTradeBtn").textContent = "新增交易";
     el("cancelTradeBtn").hidden = true;
@@ -1239,7 +1261,8 @@
     var amtRaw = el("tAmt").value;
     if(!date || isNaN(units) || isNaN(price)){ toast("請至少填日期、單位數、單價","warn"); return null; }
     var t = {date:date, side:side, units:units, price:price, fee:fee,
-      amt: amtRaw === "" ? null : parseFloat(amtRaw), note: el("tNote").value.trim()};
+      amt: amtRaw === "" ? null : parseFloat(amtRaw), note: el("tNote").value.trim(),
+      account: (el("tAcct").value.trim() || "main")};
     if(side === "賣"){
       var modeEl = el("tSellMode");
       t.sellMode = modeEl && modeEl.value === "soloFirst" ? "soloFirst" : "prorata";
@@ -1295,6 +1318,7 @@
     el("tFee").value = t.fee != null ? t.fee : 0;
     el("tAmt").value = t.amt != null ? t.amt : "";
     el("tNote").value = t.note || "";
+    el("tAcct").value = t.account || "main";
     splitSig = "";
     renderSplitBox(t.side === "賣" ? t.sellAlloc : t.splits, t.sellMode);
     el("addTradeBtn").textContent = "儲存變更";
@@ -1326,15 +1350,16 @@
 
   el("addBucketBtn").addEventListener("click", function(){
     var label = el("bLabel").value.trim(), owner = el("bOwner").value.trim();
+    var bacct = el("bAcct").value.trim() || "main";
     if(!label || !owner){ toast("請填戶名稱與擁有人","warn"); return; }
     if(db){
-      db.doc("buckets/solo_" + Date.now().toString(36)).set({label:label, owner:owner})
+      db.doc("buckets/solo_" + Date.now().toString(36)).set({label:label, owner:owner, account:bacct})
         .catch(function(e){ console.error(e); });
     } else {
-      state.buckets.push({id:"solo_" + newId(), label:label, owner:owner});
+      state.buckets.push({id:"solo_" + newId(), label:label, owner:owner, account:bacct});
       saveLocal(); render();
     }
-    el("bLabel").value = ""; el("bOwner").value = "";
+    el("bLabel").value = ""; el("bOwner").value = ""; el("bAcct").value = "";
   });
 
   var armedTimer = null;
