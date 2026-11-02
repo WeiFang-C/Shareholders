@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-19T08:18:56Z",
+  "generatedAt": "2026-11-02T08:23:51Z",
   "params": {
     "fx": 31.5,
-    "price": 46.45,
-    "updated": "2026-10-19"
+    "price": 48.01,
+    "updated": "2026-11-02"
   },
   "buckets": [
     {
@@ -31,12 +31,12 @@
       "fee": 20,
       "note": "",
       "price": 60.79,
-      "side": "買",
       "splits": {
         "bo_solo": 15610.52,
         "pool": 24007.09,
         "solo_mu32myei": 142926.47
       },
+      "side": "買",
       "units": 95
     },
     {
